@@ -1634,6 +1634,11 @@ function renderGPS(el) {
             <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">${v.name}</div>
             ${v.demo?'<div style="font-size:9px;color:#f59e0b">⚠ Données démo — بيانات تجريبية</div>':''}
             ${v.address?`<div style="font-size:10px;color:#475569">📍 ${v.address}</div>`:''}
+            ${gpsConnected&&!v.demo?`
+            <div style="display:flex;gap:6px;margin-top:8px">
+              <button onclick="cutEngine('${v.id}','${v.plate}',1)" style="flex:1;padding:6px;border-radius:7px;border:none;background:#ef4444;color:white;font-weight:700;font-size:10px;cursor:pointer">🔴 Couper</button>
+              <button onclick="cutEngine('${v.id}','${v.plate}',0)" style="flex:1;padding:6px;border-radius:7px;border:none;background:#22c55e;color:white;font-weight:700;font-size:10px;cursor:pointer">🟢 Activer</button>
+            </div>`:''}
           </div>`).join('')}
       </div>
     </div>`;
@@ -2022,6 +2027,43 @@ async function delItem(resource, id, label) {
     try { await api('DELETE','/api/'+resource+'/'+id); await loadAll(); renderPage(currentPage); toast('Supprimé ✓','success'); }
     catch(e){toast(e.error||'Erreur','error');}
   });
+}
+
+// ─── CUT ENGINE ──────────────────────────────────────────────────────────────
+async function cutEngine(deviceId, plate, action) {
+  const aid = currentAccount?.id || 'default';
+  const traccarUrl = localStorage.getItem('carloc_traccar_url_'+aid);
+  const traccarUser = localStorage.getItem('carloc_traccar_user_'+aid);
+  const traccarPass = localStorage.getItem('carloc_traccar_pass_'+aid);
+
+  if(!traccarUrl || !gpsConnected) {
+    toast('Traccar non connecté — Configurez GPS d'abord','error');
+    return;
+  }
+
+  const warningMsg = action===1
+    ? '⚠️ ATTENTION: Assurez-vous que le véhicule '+plate+' est à l'arrêt complet avant de couper le moteur !
+
+Confirmer la coupure moteur ?'
+    : 'Activer le moteur du véhicule '+plate+' ?
+Confirmer ?';
+
+  if(!confirm(warningMsg)) return;
+
+  try {
+    const params = new URLSearchParams({
+      traccar_url: traccarUrl,
+      traccar_user: traccarUser||'',
+      traccar_pass: traccarPass||'',
+      device_id: deviceId,
+      command: action===1 ? 'engineStop' : 'engineResume'
+    });
+    const result = await api('POST', '/api/traccar/command?'+params, {});
+    toast(result.message + ' — ' + plate,'success');
+  } catch(e) {
+    const smsCmd = action===1 ? 'Relay,1#' : 'Relay,0#';
+    toast('SMS de secours pour '+plate+': '+smsCmd,'info');
+  }
 }
 
 // ─── AUTO LOGIN ───────────────────────────────────────────────────────────────
