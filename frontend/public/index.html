@@ -2037,17 +2037,17 @@ async function cutEngine(deviceId, plate, action) {
   const traccarPass = localStorage.getItem('carloc_traccar_pass_'+aid);
 
   if(!traccarUrl || !gpsConnected) {
-    toast('Traccar non connecté — Configurez GPS d'abord','error');
+    toast('Traccar non connecte','error');
     return;
   }
 
   const warningMsg = action===1
-    ? '⚠️ ATTENTION: Assurez-vous que le véhicule '+plate+' est à l'arrêt complet avant de couper le moteur !
+  const warningMsg = action===1
+    ? "ATTENTION: Vehicule " + plate + " doit etre a arret. Confirmer coupure ?"
 
-Confirmer la coupure moteur ?'
-    : 'Activer le moteur du véhicule '+plate+' ?
-Confirmer ?';
 
+    : "Activer moteur du vehicule " + plate + " ? Confirmer ?"
+  ;
   if(!confirm(warningMsg)) return;
 
   try {
