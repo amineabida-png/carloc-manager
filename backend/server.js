@@ -522,7 +522,7 @@ app.get('/api/admin/stats', auth, superOnly, (req, res) => {
   const r30 = db.prepare("SELECT COUNT(*) as c FROM accounts WHERE role='client' AND plan='month'").get().c;
   const rYear = db.prepare("SELECT COUNT(*) as c FROM accounts WHERE role='client' AND plan='year'").get().c;
   const rLife = db.prepare("SELECT COUNT(*) as c FROM accounts WHERE role='client' AND plan='life'").get().c;
-  res.json({total,active,expired,revenue30:r30,revenueYear:rYear,revenueLife:rLife,totalRevenue:r30*499+rYear*4990+rLife*19999});
+  res.json({total,active,expired,revenue30:r30,revenueYear:rYear,revenueLife:rLife,totalRevenue:r30*499+rYear*3490+rLife*14900});
 });
 
 // ─── TRIAL REQUESTS ───────────────────────────────────────────────────────────
