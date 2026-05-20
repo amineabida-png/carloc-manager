@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#060d1a">
+<title>CarLoc Manager</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#060d1a;color:#f1f5f9;font-family:'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
+input,select,textarea{font-size:16px!important}
+button{touch-action:manipulation}
+.hidden{display:none!important}
+
+/* ── LOGIN ── */
+#loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#060d1a,#0a1628);overflow-y:auto}
+.login-box{background:#0d1829;border:1px solid #1a2744;border-radius:20px;padding:36px;width:100%;max-width:420px}
+.logo{text-align:center;margin-bottom:28px}
+.logo-icon{width:64px;height:64px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px}
+.logo h1{font-size:22px;font-weight:900;letter-spacing:0.5px}
+.logo p{font-size:11px;color:#3b82f6;font-weight:700;letter-spacing:1.5px;margin-top:4px}
+.logo .ar{font-size:13px;color:#94a3b8;margin-top:4px;direction:rtl}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px}
+.field input{width:100%;padding:12px 14px;background:#0a1520;border:1px solid #1a2744;border-radius:10px;color:#f1f5f9;font-size:14px;outline:none}
+.field input:focus{border-color:#3b82f6}
+.btn-login{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;font-weight:800;font-size:15px;cursor:pointer;margin-top:8px}
+.error-msg{color:#ef4444;font-size:13px;margin-top:10px;text-align:center;display:none}
+
+/* ── APP ── */
+#appPage{display:none;flex:1}
+.app-layout{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:240px;background:#080f1e;border-right:1px solid #1a2744;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:100;overflow-y:auto}
+.sidebar-header{padding:18px 14px;border-bottom:1px solid #1a2744;display:flex;align-items:center;gap:10px}
+.sidebar-logo{width:38px;height:38px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sidebar-title{font-size:13px;font-weight:800;line-height:1.2;color:#f1f5f9}
+.sidebar-subtitle{font-size:9px;color:#3b82f6;font-weight:700;letter-spacing:1px;margin-top:2px}
+.sidebar-subtitle-ar{font-size:9px;color:#94a3b8;direction:rtl;margin-top:1px}
+.sidebar-nav{flex:1;padding:8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;color:#94a3b8;border:none;background:transparent;width:100%;text-align:left;border-left:3px solid transparent;transition:all 0.2s;margin-bottom:1px}
+.nav-item:hover{background:#ffffff10;color:#f1f5f9}
+.nav-item.active{background:#3b82f615;color:#3b82f6;font-weight:700;border-left-color:#3b82f6}
+.nav-item .icon{font-size:15px;flex-shrink:0;width:20px;text-align:center}
+.nav-badge{background:#ef4444;color:white;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:auto}
+.nav-section{font-size:9px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:1px;padding:10px 12px 4px}
+.sidebar-footer{padding:12px 14px;border-top:1px solid #1a2744}
+.user-info{display:flex;align-items:center;gap:10px}
+.user-avatar{width:34px;height:34px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0}
+.user-name{font-size:12px;font-weight:700;color:#f1f5f9}
+.user-role{font-size:10px;color:#94a3b8}
+.license-badge{margin-top:8px;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;text-align:center}
+
+/* ── MAIN ── */
+.main-content{margin-left:240px;flex:1;min-height:100vh;background:#060d1a}
+.topbar{height:50px;background:#080f1e;border-bottom:1px solid #1a2744;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-title{font-size:12px;font-weight:700;color:#475569}
+.topbar-ar{font-size:11px;color:#334155;direction:rtl}
+.topbar-right{display:flex;gap:8px;align-items:center}
+.badge-expire{padding:4px 10px;border-radius:6px;background:#ef444418;border:1px solid #ef444430;font-size:11px;font-weight:700;color:#ef4444}
+.btn-super{padding:5px 12px;border-radius:8px;border:1px solid #f59e0b40;background:#f59e0b18;color:#f59e0b;font-weight:700;cursor:pointer;font-size:11px}
+.btn-logout{padding:5px 12px;border-radius:8px;border:1px solid #1a2744;background:transparent;color:#94a3b8;cursor:pointer;font-size:11px}
+.page{padding:28px;display:none}
+.page.active{display:block}
+
+/* ── CARDS ── */
+.card{background:#0d1829;border:1px solid #1a2744;border-radius:16px;padding:20px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:#0d1829;border:1px solid #1a2744;border-radius:14px;padding:18px}
+.stat-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px}
+.stat-value{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.stat-label{font-size:11px;color:#94a3b8;margin-top:2px}
+.stat-ar{font-size:10px;color:#475569;direction:rtl;margin-top:1px}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.page-title{font-size:22px;font-weight:800}
+.page-title-ar{font-size:13px;color:#94a3b8;direction:rtl;margin-top:2px}
+.page-sub{font-size:12px;color:#94a3b8;margin-top:3px}
+
+/* ── BUTTONS ── */
+.btn{padding:9px 18px;border-radius:10px;border:none;cursor:pointer;font-weight:700;font-size:13px;transition:all 0.15s}
+.btn-blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff}
+.btn-ghost{background:transparent;border:1px solid #1a2744;color:#94a3b8}
+.btn-danger{background:#ef444418;border:1px solid #ef444440;color:#ef4444}
+.btn-success{background:#22c55e18;border:1px solid #22c55e40;color:#22c55e}
+.btn-warning{background:#f59e0b18;border:1px solid #f59e0b40;color:#f59e0b}
+.btn-sm{padding:5px 12px;font-size:11px;border-radius:7px}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th{padding:8px 12px;text-align:left;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;border-bottom:1px solid #1a2744}
+td{padding:11px 12px;font-size:13px;border-bottom:1px solid #0f1e35}
+tr:hover td{background:#ffffff04}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-dot{width:5px;height:5px;border-radius:50%}
+
+/* ── CAR CARD ── */
+.car-card{background:#0d1829;border:1px solid #1a2744;border-radius:16px;padding:18px;transition:all 0.2s}
+.car-card:hover{border-color:#3b82f620}
+.car-status-bar{height:4px;border-radius:2px;margin-bottom:14px}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:#00000090;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:#0d1829;border:1px solid #1a2744;border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal-header{padding:20px 24px;border-bottom:1px solid #1a2744;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#0d1829;z-index:1}
+.modal-body{padding:24px}
+.modal-footer{padding:0 24px 24px;display:flex;gap:10px;justify-content:flex-end}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-field label{display:block;font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px;text-transform:uppercase}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 14px;background:#0a1520;border:1px solid #1a2744;border-radius:10px;color:#f1f5f9;font-size:13px;outline:none;box-sizing:border-box}
+.form-field input:focus,.form-field select:focus{border-color:#3b82f6}
+.full-width{grid-column:1/-1}
+
+/* ── TOAST ── */
+#toastContainer{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 18px;border-radius:12px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;min-width:260px;animation:slideIn .3s ease;box-shadow:0 8px 24px #00000060}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast-success{background:#16a34a}
+.toast-error{background:#dc2626}
+.toast-info{background:#1d4ed8}
+
+/* ── CONFIRM ── */
+#confirmModal .modal{max-width:420px}
+
+/* ── CONTRACT PREVIEW ── */
+.contract-preview{background:#fff;color:#111;padding:32px;border-radius:12px;font-family:Arial,sans-serif;font-size:13px;line-height:1.6}
+.contract-preview h2{text-align:center;color:#1d4ed8;margin-bottom:4px}
+.contract-preview .ctr-line{border-top:2px solid #1d4ed8;margin:16px 0}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{width:60px}
+  .sidebar-title,.sidebar-subtitle,.sidebar-subtitle-ar,.nav-item span:not(.icon),.user-name,.user-role,.license-badge,.nav-section,.nav-badge{display:none}
+  .main-content{margin-left:60px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .form-grid{grid-template-columns:1fr}
+  .page{padding:16px}
+}
+@media(max-width:480px){
+  .sidebar{width:100%;height:58px;flex-direction:row;position:fixed;bottom:0;top:auto;border-right:none;border-top:1px solid #1a2744;overflow-x:auto;overflow-y:hidden}
+  .sidebar-header,.sidebar-footer,.license-badge,.nav-section{display:none!important}
+  .sidebar-nav{flex-direction:row;padding:0;display:flex;align-items:center;width:100%;scrollbar-width:none}
+  .sidebar-nav::-webkit-scrollbar{display:none}
+  .nav-item{flex-direction:column;gap:2px;min-width:58px;height:58px;padding:6px 4px;border-radius:0;border-left:none;border-top:2px solid transparent;font-size:9px;justify-content:center;border-bottom:none}
+  .nav-item.active{border-top-color:#3b82f6;background:#3b82f610}
+  .main-content{margin-left:0;margin-bottom:58px}
+  .page{padding:12px}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .page-header{flex-direction:column;align-items:flex-start;gap:10px}
+}
+@supports(padding-bottom:env(safe-area-inset-bottom)){
+  @media(max-width:480px){
+    .sidebar{padding-bottom:env(safe-area-inset-bottom)}
+    .main-content{margin-bottom:calc(58px + env(safe-area-inset-bottom))}
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="toastContainer"></div>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="logo">
+      <div class="logo-icon">🚗</div>
+      <h1>CarLoc Manager</h1>
+      <p>GESTION DE LOCATION DE VOITURES</p>
+      <div class="ar">إدارة تأجير السيارات</div>
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="votre@email.ma" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Mot de passe — كلمة المرور</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Se connecter — تسجيل الدخول</button>
+    <div class="error-msg" id="loginError"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin:16px 0">
+      <div style="flex:1;height:1px;background:#1a2744"></div>
+      <span style="font-size:11px;color:#475569">OU</span>
+      <div style="flex:1;height:1px;background:#1a2744"></div>
+    </div>
+    <button onclick="showTrialForm()" style="width:100%;padding:12px;border-radius:12px;border:1px solid #3b82f640;background:#3b82f610;color:#3b82f6;font-weight:700;font-size:14px;cursor:pointer">
+      🚀 Demander un essai gratuit 48h
+    </button>
+    <div style="text-align:center;margin-top:8px;font-size:11px;color:#475569">✓ Accès complet · ✓ Sans carte bancaire · طلب تجريبي مجاني</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appPage">
+  <div class="app-layout">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">🚗</div>
+        <div>
+          <div class="sidebar-title">CarLoc Manager</div>
+          <div class="sidebar-subtitle">LOCATION VOITURES</div>
+          <div class="sidebar-subtitle-ar">تأجير السيارات</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav" id="sidebarNav"></nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">??</div>
+          <div>
+            <div class="user-name" id="userName">-</div>
+            <div class="user-role" id="userRoleLabel">-</div>
+          </div>
+        </div>
+        <div class="license-badge" id="licenseBadge"></div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-left">
+          <div>
+            <div class="topbar-title">CarLoc Manager</div>
+            <div class="topbar-ar">مدير تأجير السيارات</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div id="expireBadge" class="badge-expire hidden"></div>
+          <button id="btnSuperAdmin" class="btn-super hidden" onclick="showPage('superadmin')">👑 Super Admin</button>
+          <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+        </div>
+      </div>
+
+      <div id="page-dashboard" class="page active"></div>
+      <div id="page-fleet" class="page"></div>
+      <div id="page-clients" class="page"></div>
+      <div id="page-reservations" class="page"></div>
+      <div id="page-contrats" class="page"></div>
+      <div id="page-factures" class="page"></div>
+      <div id="page-sinistres" class="page"></div>
+      <div id="page-maintenance" class="page"></div>
+      <div id="page-depenses" class="page"></div>
+      <div id="page-gps" class="page"></div>
+      <div id="page-rapports" class="page"></div>
+      <div id="page-alerts" class="page"></div>
+      <div id="page-superadmin" class="page"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="mainModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle" style="font-size:16px;font-weight:800"></h3>
+      <button onclick="closeModal()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header"><h3 id="confirmTitle" style="font-size:16px;font-weight:800"></h3></div>
+    <div class="modal-body"><p id="confirmMsg" style="color:#94a3b8;font-size:14px;line-height:1.6"></p></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('confirmModal').classList.remove('open')">Annuler</button>
+      <button class="btn btn-danger" id="confirmBtn">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRIAL FORM -->
+<div class="modal-overlay" id="trialModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <div>
+        <h3 style="font-size:16px;font-weight:800;margin:0">🚀 Demande d'essai gratuit 48h</h3>
+        <p style="color:#94a3b8;font-size:12px;margin:4px 0 0">طلب تجريبي مجاني — Validation sous 24h</p>
+      </div>
+      <button onclick="document.getElementById('trialModal').classList.remove('open')" style="background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label>Prénom — الاسم</label><input id="tr_prenom" placeholder="Mohammed"></div>
+        <div class="form-field"><label>Nom — اللقب</label><input id="tr_nom" placeholder="Alami"></div>
+        <div class="form-field"><label>Téléphone — الهاتف</label><input id="tr_phone" placeholder="0661234567" type="tel"></div>
+        <div class="form-field"><label>Email — البريد</label><input id="tr_email" placeholder="contact@societe.ma" type="email"></div>
+        <div class="form-field full-width"><label>Société de location — شركة التأجير</label><input id="tr_societe" placeholder="Auto Location Casablanca SARL"></div>
+      </div>
+      <div id="trialError" style="color:#ef4444;font-size:13px;margin-top:10px;display:none"></div>
+      <div id="trialSuccess" style="display:none;margin-top:10px;padding:14px;background:#22c55e18;border:1px solid #22c55e40;border-radius:10px;text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">✅</div>
+        <div style="font-size:14px;font-weight:800;color:#22c55e">Demande envoyée ! تم الإرسال</div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:4px">Notre équipe vous contacte sous 24h — سيتم التواصل معك خلال 24 ساعة</div>
+      </div>
+    </div>
+    <div class="modal-footer" id="trialFooter">
+      <button class="btn btn-ghost" onclick="document.getElementById('trialModal').classList.remove('open')">Annuler</button>
+      <button class="btn btn-blue" onclick="submitTrialRequest()" id="trialSubmitBtn">Envoyer — إرسال</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let token = localStorage.getItem('carloc_token');
+let currentAccount = null;
+let currentPage = 'dashboard';
+let state = { cars:[], clients:[], reservations:[], contrats:[], factures:[], sinistres:[], maintenances:[], depenses:[], alerts:[] };
+let gpsConnected = false, gpsPositions = [], gpsInterval = null;
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+async function api(method, url, body) {
+  const opts = { method, headers: {'Content-Type':'application/json'} };
+  if(token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if(body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  const data = await res.json();
+  if(!res.ok) throw data;
+  return data;
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function fmtMAD(n) { return Number(n||0).toLocaleString('fr-MA') + ' MAD'; }
+function fmtDate(d) { if(!d) return '—'; return new Date(d).toLocaleDateString('fr-MA'); }
+function daysLeft(d) { if(!d) return null; return Math.ceil((new Date(d)-new Date())/86400000); }
+function daysLeftLabel(d) {
+  const n = daysLeft(d);
+  if(n===null) return '—';
+  if(n<0) return '<span style="color:#ef4444">Expiré</span>';
+  if(n<=14) return '<span style="color:#ef4444">'+n+' j</span>';
+  if(n<=30) return '<span style="color:#f59e0b">'+n+' j</span>';
+  return '<span style="color:#22c55e">'+n+' j</span>';
+}
+
+const STATUS_COLORS = {
+  disponible:'#22c55e', loue:'#f97316', maintenance:'#f59e0b', reserve:'#3b82f6', hors_service:'#ef4444',
+  confirmee:'#3b82f6', annulee:'#ef4444', terminee:'#22c55e',
+  en_cours:'#f97316', termine:'#22c55e', annule:'#ef4444',
+  en_attente:'#f59e0b', paye:'#22c55e', retard:'#ef4444',
+  ouvert:'#ef4444', ferme:'#22c55e', en_traitement:'#f97316',
+  planifie:'#3b82f6', urgent:'#ef4444',
+  info:'#3b82f6', warning:'#f59e0b', actif:'#22c55e', suspendu:'#ef4444'
+};
+const STATUS_LABELS = {
+  disponible:'Disponible متاح', loue:'Loué مستأجر', maintenance:'Maintenance صيانة',
+  reserve:'Réservé محجوز', hors_service:'Hors service خارج الخدمة',
+  confirmee:'Confirmée مؤكدة', annulee:'Annulée ملغية', terminee:'Terminée منتهية',
+  en_cours:'En cours جارية', termine:'Terminé منتهي', annule:'Annulé ملغي',
+  en_attente:'En attente في الانتظار', paye:'Payé مدفوع', retard:'En retard متأخر',
+  ouvert:'Ouvert مفتوح', ferme:'Fermé مغلق', en_traitement:'En traitement قيد المعالجة',
+  planifie:'Planifié مخطط', urgent:'URGENT عاجل',
+  info:'Info معلومة', warning:'Attention تحذير'
+};
+
+function badge(status) {
+  const c = STATUS_COLORS[status]||'#64748b';
+  const l = STATUS_LABELS[status]||status;
+  return `<span class="badge" style="background:${c}20;color:${c}"><span class="badge-dot" style="background:${c}"></span>${l}</span>`;
+}
+
+function toast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = 'toast toast-'+type;
+  t.textContent = msg;
+  t.onclick = ()=>t.remove();
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+function confirm2(title, msg, cb) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmModal').classList.add('open');
+  document.getElementById('confirmBtn').onclick = ()=>{ cb(); document.getElementById('confirmModal').classList.remove('open'); };
+}
+
+function openModal(title, bodyHtml, footerHtml) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  document.getElementById('modalFooter').innerHTML = footerHtml;
+  document.getElementById('mainModal').classList.add('open');
+}
+function closeModal() { document.getElementById('mainModal').classList.remove('open'); }
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+  try {
+    const data = await api('POST','/api/login',{email,password});
+    token = data.token;
+    localStorage.setItem('carloc_token', token);
+    currentAccount = data.account;
+    await initApp();
+  } catch(e) {
+    errEl.textContent = e.error||'Erreur de connexion';
+    errEl.style.display = 'block';
+  }
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  localStorage.removeItem('carloc_token');
+  token = null; currentAccount = null;
+  gpsConnected = false;
+  if(gpsInterval) clearInterval(gpsInterval);
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('appPage').style.display = 'none';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+async function initApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appPage').style.display = 'flex';
+
+  const btnSA = document.getElementById('btnSuperAdmin');
+  if(btnSA) { btnSA.classList.add('hidden'); btnSA.style.display='none'; }
+  document.getElementById('sidebarNav').innerHTML = '';
+
+  const name = currentAccount.name;
+  const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userName').textContent = name;
+  document.getElementById('userRoleLabel').textContent = currentAccount.role==='super'?'Super Admin':currentAccount.company||'Client';
+
+  const lic = document.getElementById('licenseBadge');
+  if(currentAccount.role==='super') {
+    lic.textContent = '👑 Super Admin';
+    lic.style.cssText = 'background:#f59e0b20;color:#f59e0b;border:1px solid #f59e0b40';
+    const saBtn = document.getElementById('btnSuperAdmin');
+    if(saBtn) { saBtn.classList.remove('hidden'); saBtn.style.display='inline-block'; }
+  } else if(currentAccount.plan==='life') {
+    lic.textContent = '∞ Licence à vie';
+    lic.style.cssText = 'background:#22c55e20;color:#22c55e;border:1px solid #22c55e40';
+  } else {
+    const days = Math.max(0,Math.ceil((new Date(currentAccount.expires_at)-new Date())/86400000));
+    lic.textContent = days+'j restants — '+days+' يوم';
+    lic.style.cssText = days<=7?'background:#ef444418;color:#ef4444;border:1px solid #ef444430':'background:#3b82f618;color:#3b82f6;border:1px solid #3b82f630';
+    if(days<=7) { document.getElementById('expireBadge').textContent='⚠ Licence expire dans '+days+'j'; document.getElementById('expireBadge').classList.remove('hidden'); }
+  }
+
+  buildSidebar();
+  await loadAll();
+
+  // Auto-reconnect Traccar
+  const aid = currentAccount.id||'default';
+  try {
+    const [ur,usr,pr] = await Promise.all([api('GET','/api/settings/traccar_url'),api('GET','/api/settings/traccar_user'),api('GET','/api/settings/traccar_pass')]);
+    if(ur.value) localStorage.setItem('carloc_traccar_url_'+aid,ur.value);
+    if(usr.value) localStorage.setItem('carloc_traccar_user_'+aid,usr.value);
+    if(pr.value) localStorage.setItem('carloc_traccar_pass_'+aid,pr.value);
+  } catch(e){}
+  const tu = localStorage.getItem('carloc_traccar_url_'+aid);
+  if(tu) { fetchGPS().then(()=>{ if(gpsConnected) { if(gpsInterval) clearInterval(gpsInterval); gpsInterval=setInterval(()=>{fetchGPS().then(()=>{if(currentPage==='gps')renderPage('gps');});},10000); } }); }
+
+  showPage('dashboard');
+}
+
+function buildSidebar() {
+  const isSuper = currentAccount.role==='super';
+  const items = [
+    {section:'PRINCIPAL — رئيسي'},
+    {id:'dashboard',icon:'📊',label:'Dashboard — لوحة التحكم'},
+    {id:'fleet',icon:'🚗',label:'Flotte — أسطول السيارات'},
+    {id:'clients',icon:'👤',label:'Clients — الزبائن'},
+    {section:'LOCATION — التأجير'},
+    {id:'reservations',icon:'📅',label:'Réservations — الحجوزات'},
+    {id:'contrats',icon:'📋',label:'Contrats — العقود'},
+    {id:'factures',icon:'💰',label:'Facturation — الفواتير'},
+    {section:'GESTION — الإدارة'},
+    {id:'sinistres',icon:'🚨',label:'Sinistres — الحوادث'},
+    {id:'maintenance',icon:'🔧',label:'Maintenance — الصيانة'},
+    {id:'depenses',icon:'💸',label:'Dépenses — المصاريف'},
+    {id:'gps',icon:'📍',label:'GPS Live — التتبع'},
+    {id:'rapports',icon:'📈',label:'Rapports — التقارير'},
+    {id:'alerts',icon:'🔔',label:'Alertes — التنبيهات',badge:true},
+  ];
+  if(isSuper) items.push({section:'ADMIN'},{ id:'superadmin',icon:'👑',label:'Super Admin'});
+
+  const nav = document.getElementById('sidebarNav');
+  nav.innerHTML = items.map(it=>{
+    if(it.section) return `<div class="nav-section">${it.section}</div>`;
+    return `<button class="nav-item" id="nav-${it.id}" onclick="showPage('${it.id}')">
+      <span class="icon">${it.icon}</span>
+      <span>${it.label}</span>
+      ${it.badge?'<span class="nav-badge hidden" id="alertBadge">0</span>':''}
+    </button>`;
+  }).join('');
+}
+
+async function loadAll() {
+  try {
+    const endpoints = ['cars','clients','reservations','contrats','factures','sinistres','maintenances','depenses','alerts'];
+    const results = await Promise.all(endpoints.map(e=>api('GET','/api/'+e)));
+    endpoints.forEach((e,i)=>state[e]=results[i]);
+    const unread = state.alerts.filter(a=>!a.read).length;
+    const badge = document.getElementById('alertBadge');
+    if(badge) { badge.textContent=unread; badge.classList.toggle('hidden',unread===0); }
+    // Auto-generate alerts for expiring docs
+    checkAutoAlerts();
+  } catch(e){ console.error(e); }
+}
+
+function checkAutoAlerts() {
+  state.cars.forEach(car => {
+    if(car.insurance_exp) {
+      const d = daysLeft(car.insurance_exp);
+      if(d!==null && d<=30 && d>=0) {
+        const exists = state.alerts.find(a=>a.title.includes(car.plate)&&a.title.includes('Assurance'));
+        if(!exists) api('POST','/api/alerts',{type:d<=14?'urgent':'warning',title:'Assurance expire — '+car.plate,desc:'Expire dans '+d+' jours — '+car.brand+' '+car.model}).catch(()=>{});
+      }
+    }
+    if(car.visite_exp) {
+      const d = daysLeft(car.visite_exp);
+      if(d!==null && d<=30 && d>=0) {
+        const exists = state.alerts.find(a=>a.title.includes(car.plate)&&a.title.includes('Visite'));
+        if(!exists) api('POST','/api/alerts',{type:d<=14?'urgent':'warning',title:'Visite technique expire — '+car.plate,desc:'Expire dans '+d+' jours'}).catch(()=>{});
+      }
+    }
+  });
+}
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  const nav = document.getElementById('nav-'+page);
+  if(el) el.classList.add('active');
+  if(nav) nav.classList.add('active');
+  currentPage = page;
+  renderPage(page);
+}
+
+function renderPage(page) {
+  const el = document.getElementById('page-'+page);
+  if(!el) return;
+  switch(page) {
+    case 'dashboard': renderDashboard(el); break;
+    case 'fleet': renderFleet(el); break;
+    case 'clients': renderClients(el); break;
+    case 'reservations': renderReservations(el); break;
+    case 'contrats': renderContrats(el); break;
+    case 'factures': renderFactures(el); break;
+    case 'sinistres': renderSinistres(el); break;
+    case 'maintenance': renderMaintenance(el); break;
+    case 'depenses': renderDepenses(el); break;
+    case 'gps': renderGPS(el); break;
+    case 'rapports': renderRapports(el); break;
+    case 'alerts': renderAlerts(el); break;
+    case 'superadmin': renderSuperAdmin(el); break;
+  }
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+async function renderDashboard(el) {
+  let stats = {};
+  try { stats = await api('GET','/api/stats'); } catch(e){}
+  const cars = state.cars||[], contrats = state.contrats||[], factures = state.factures||[];
+  const revenue = contrats.filter(c=>c.statut==='termine').reduce((a,c)=>a+Number(c.total||0),0);
+
+  el.innerHTML = `
+    <div style="margin-bottom:22px">
+      <div style="font-size:22px;font-weight:800">Tableau de bord</div>
+      <div style="font-size:13px;color:#94a3b8;direction:rtl;margin-top:2px">لوحة التحكم — Bonjour, ${currentAccount.name}</div>
+    </div>
+    <div class="stats-grid">
+      ${[
+        {icon:'🚗',label:'Véhicules — السيارات',ar:'',val:stats.cars||0,sub:(stats.available||0)+' disponibles',color:'#3b82f6'},
+        {icon:'👤',label:'Clients — الزبائن',ar:'',val:stats.clients||0,sub:'fichier clients',color:'#22c55e'},
+        {icon:'📋',label:'Contrats actifs',ar:'عقود نشطة',val:stats.activeContrats||0,sub:'en cours',color:'#f97316'},
+        {icon:'💰',label:'CA réalisé — رقم الأعمال',ar:'',val:fmtMAD(revenue),sub:'contrats terminés',color:'#a855f7'},
+        {icon:'⏳',label:'En attente — في الانتظار',ar:'',val:fmtMAD(stats.pending||0),sub:'à encaisser',color:'#f59e0b'},
+        {icon:'🚨',label:'Sinistres ouverts',ar:'حوادث مفتوحة',val:stats.sinistres||0,sub:'à traiter',color:'#ef4444'},
+        {icon:'🔔',label:'Alertes — تنبيهات',ar:'',val:stats.unreadAlerts||0,sub:'non lues',color:'#ef4444'},
+        {icon:'✅',label:'Dispo immédiate',ar:'متاحة فوراً',val:stats.available||0,sub:'véhicules',color:'#22c55e'},
+      ].map(s=>`<div class="stat-card">
+        <div class="stat-icon" style="background:${s.color}18">${s.icon}</div>
+        <div class="stat-value" style="color:${s.color}">${s.val}</div>
+        <div class="stat-label">${s.label}</div>
+        <div style="font-size:10px;color:#334155;margin-top:1px">${s.sub}</div>
+      </div>`).join('')}
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+      <div class="card">
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px">Contrats récents — العقود الأخيرة</div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:14px">العقود الأخيرة</div>
+        ${contrats.slice(0,5).map(c=>{
+          const car=state.cars.find(v=>v.id==c.car_id), cli=state.clients.find(x=>x.id==c.client_id);
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0f1e35">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#3b82f6">${c.id}</div>
+              <div style="font-size:11px;color:#94a3b8">${cli?cli.prenom+' '+cli.nom:'—'} · ${car?car.plate:'—'}</div>
+              <div style="font-size:11px;color:#475569">${c.date_debut||''} → ${c.date_fin||''}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:13px;font-weight:800">${fmtMAD(c.total)}</div>
+              ${badge(c.statut)}
+            </div>
+          </div>`;
+        }).join('')||'<p style="color:#94a3b8;font-size:13px;padding:16px 0">Aucun contrat — لا توجد عقود</p>'}
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div style="font-size:14px;font-weight:700;margin-bottom:12px">Flotte rapide — نظرة على الأسطول</div>
+          ${[
+            ['🟢','Disponibles',cars.filter(c=>c.status==='disponible').length,'#22c55e'],
+            ['🟠','Louées',cars.filter(c=>c.status==='loue').length,'#f97316'],
+            ['🔵','Réservées',cars.filter(c=>c.status==='reserve').length,'#3b82f6'],
+            ['🔴','Maintenance',cars.filter(c=>c.status==='maintenance').length,'#ef4444'],
+          ].map(([i,l,v,c])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #0f1e35">
+            <span style="font-size:12px;color:#94a3b8">${i} ${l}</span>
+            <span style="font-size:16px;font-weight:800;color:${c}">${v}</span>
+          </div>`).join('')}
+        </div>
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:12px">Actions rapides — إجراءات سريعة</div>
+          <button class="btn btn-blue" style="width:100%;margin-bottom:8px" onclick="showPage('reservations')">📅 Nouvelle réservation</button>
+          <button class="btn btn-ghost" style="width:100%;margin-bottom:8px" onclick="showPage('contrats')">📋 Nouveau contrat</button>
+          <button class="btn btn-ghost" style="width:100%" onclick="showPage('clients')">👤 Nouveau client</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── FLEET ────────────────────────────────────────────────────────────────────
+function renderFleet(el) {
+  const cars = state.cars||[];
+  const cats = ['Tous',...[...new Set(cars.map(c=>c.category))]];
+  const filter = window.fleetFilter||'Tous';
+  const filtered = filter==='Tous'?cars:cars.filter(c=>c.category===filter);
+
+  el.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Gestion de la flotte 🚗</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">إدارة أسطول السيارات — ${cars.length} véhicule(s)</div>
+      </div>
+      <button class="btn btn-blue" onclick="carForm()">+ Ajouter véhicule</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+      ${cats.map(c=>`<button onclick="window.fleetFilter='${c}';renderPage('fleet')" style="padding:6px 14px;border-radius:20px;border:1px solid ${filter===c?'#3b82f6':'#1a2744'};background:${filter===c?'#3b82f620':'transparent'};color:${filter===c?'#3b82f6':'#94a3b8'};font-size:12px;font-weight:700;cursor:pointer">${c}</button>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+      ${filtered.map(car=>{
+        const statusColor = STATUS_COLORS[car.status]||'#64748b';
+        const activeContrat = state.contrats.find(c=>c.car_id==car.id&&c.statut==='en_cours');
+        const client = activeContrat?state.clients.find(x=>x.id==activeContrat.client_id):null;
+        return `<div class="car-card">
+          <div class="car-status-bar" style="background:${statusColor}"></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <div>
+              <div style="font-size:16px;font-weight:800">${car.plate}</div>
+              <div style="font-size:12px;color:#94a3b8">${car.brand} ${car.model} · ${car.year}</div>
+              <div style="font-size:11px;color:#3b82f6;margin-top:2px">${car.category}</div>
+            </div>
+            ${badge(car.status)}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px">
+            <div style="padding:8px;background:#ffffff06;border-radius:8px;text-align:center">
+              <div style="font-size:11px;color:#94a3b8">Prix/j</div>
+              <div style="font-size:13px;font-weight:800;color:#3b82f6">${Number(car.price_day||0).toLocaleString()} MAD</div>
+            </div>
+            <div style="padding:8px;background:#ffffff06;border-radius:8px;text-align:center">
+              <div style="font-size:11px;color:#94a3b8">Km</div>
+              <div style="font-size:13px;font-weight:800">${Number(car.km||0).toLocaleString()}</div>
+            </div>
+            <div style="padding:8px;background:#ffffff06;border-radius:8px;text-align:center">
+              <div style="font-size:11px;color:#94a3b8">Places</div>
+              <div style="font-size:13px;font-weight:800">${car.seats||5}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">
+            <div style="padding:6px;background:#ffffff04;border-radius:6px">
+              <div style="font-size:9px;color:#94a3b8">Assurance</div>
+              <div style="font-size:10px;font-weight:700">${car.insurance_exp?daysLeftLabel(car.insurance_exp):'—'}</div>
+            </div>
+            <div style="padding:6px;background:#ffffff04;border-radius:6px">
+              <div style="font-size:9px;color:#94a3b8">Vignette</div>
+              <div style="font-size:10px;font-weight:700">${car.vignette_exp?daysLeftLabel(car.vignette_exp):'—'}</div>
+            </div>
+            <div style="padding:6px;background:#ffffff04;border-radius:6px">
+              <div style="font-size:9px;color:#94a3b8">Visite tech.</div>
+              <div style="font-size:10px;font-weight:700">${car.visite_exp?daysLeftLabel(car.visite_exp):'—'}</div>
+            </div>
+          </div>
+          ${client?`<div style="padding:8px 10px;background:#3b82f615;border-radius:8px;font-size:11px;color:#3b82f6;margin-bottom:10px">👤 ${client.prenom} ${client.nom} · jusqu'au ${activeContrat.date_fin}</div>`:''}
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="carForm(${car.id})">Modifier</button>
+            <button class="btn btn-success btn-sm" onclick="quickContract(${car.id})">📋 Contrat</button>
+            <button class="btn btn-danger btn-sm" onclick="delItem('cars',${car.id},'ce véhicule')">Suppr.</button>
+          </div>
+        </div>`;
+      }).join('')||'<div class="card" style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:40px">Aucun véhicule — لا توجد سيارات</div>'}
+    </div>`;
+}
+
+function carForm(id) {
+  const car = id?state.cars.find(c=>c.id==id):{};
+  const cats = ['Economique','Compacte','Berline','SUV','4x4','Minivan','Luxe','Utilitaire'];
+  const fuels = ['Essence','Diesel','Hybride','Electrique'];
+  const trans = ['Manuelle','Automatique'];
+  const statuses = ['disponible','loue','reserve','maintenance','hors_service'];
+  openModal(id?'Modifier véhicule':'Nouveau véhicule 🚗',`
+    <div class="form-grid">
+      <div class="form-field"><label>Immatriculation *</label><input id="f_plate" value="${car.plate||''}" placeholder="12345-A-6"></div>
+      <div class="form-field"><label>Marque *</label><input id="f_brand" value="${car.brand||''}" placeholder="Dacia"></div>
+      <div class="form-field"><label>Modèle *</label><input id="f_model" value="${car.model||''}" placeholder="Sandero"></div>
+      <div class="form-field"><label>Année</label><input type="number" id="f_year" value="${car.year||2020}"></div>
+      <div class="form-field"><label>Catégorie — الفئة</label><select id="f_cat">${cats.map(c=>`<option ${car.category==c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Carburant — الوقود</label><select id="f_fuel">${fuels.map(f=>`<option ${car.fuel_type==f?'selected':''}>${f}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Transmission</label><select id="f_trans">${trans.map(t=>`<option ${car.transmission==t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Places</label><input type="number" id="f_seats" value="${car.seats||5}"></div>
+      <div class="form-field"><label>Couleur — اللون</label><input id="f_color" value="${car.color||''}" placeholder="Blanc"></div>
+      <div class="form-field"><label>Kilométrage</label><input type="number" id="f_km" value="${car.km||0}"></div>
+      <div class="form-field"><label>Prix/jour (MAD)</label><input type="number" id="f_price" value="${car.price_day||0}"></div>
+      <div class="form-field"><label>Statut</label><select id="f_status">${statuses.map(s=>`<option value="${s}" ${car.status==s?'selected':''}>${STATUS_LABELS[s]||s}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Expir. assurance</label><input type="date" id="f_ins" value="${car.insurance_exp||''}"></div>
+      <div class="form-field"><label>Expir. vignette</label><input type="date" id="f_vig" value="${car.vignette_exp||''}"></div>
+      <div class="form-field"><label>Expir. visite tech.</label><input type="date" id="f_visit" value="${car.visite_exp||''}"></div>
+      <div class="form-field"><label>Prochain entretien (km)</label><input type="number" id="f_maint" value="${car.next_maintenance||0}"></div>
+      <div class="form-field full-width"><label>Notes</label><textarea id="f_notes" rows="2">${car.notes||''}</textarea></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveCar(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`
+  );
+}
+
+async function saveCar(id) {
+  const data = {
+    plate:document.getElementById('f_plate').value, brand:document.getElementById('f_brand').value,
+    model:document.getElementById('f_model').value, year:+document.getElementById('f_year').value,
+    category:document.getElementById('f_cat').value, fuel_type:document.getElementById('f_fuel').value,
+    transmission:document.getElementById('f_trans').value, seats:+document.getElementById('f_seats').value,
+    color:document.getElementById('f_color').value, km:+document.getElementById('f_km').value,
+    price_day:+document.getElementById('f_price').value, status:document.getElementById('f_status').value,
+    insurance_exp:document.getElementById('f_ins').value, vignette_exp:document.getElementById('f_vig').value,
+    visite_exp:document.getElementById('f_visit').value, next_maintenance:+document.getElementById('f_maint').value,
+    notes:document.getElementById('f_notes').value,
+  };
+  if(!data.plate||!data.brand||!data.model){toast('Plaque, marque et modèle requis','error');return;}
+  try {
+    if(id) await api('PUT','/api/cars/'+id,data);
+    else await api('POST','/api/cars',data);
+    closeModal(); await loadAll(); renderPage('fleet'); toast('Véhicule sauvegardé ✓','success');
+  } catch(e){toast(e.error||'Erreur','error');}
+}
+
+// ─── CLIENTS ──────────────────────────────────────────────────────────────────
+function renderClients(el) {
+  const clients = state.clients||[];
+  el.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Gestion des clients 👤</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">إدارة الزبائن — ${clients.length} client(s)</div>
+      </div>
+      <button class="btn btn-blue" onclick="clientForm()">+ Nouveau client</button>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nom — الاسم</th><th>CIN/Passport</th><th>Téléphone</th><th>Permis</th><th>Ville</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${clients.map(c=>`<tr>
+              <td>
+                <div style="font-weight:700">${c.prenom} ${c.nom}</div>
+                <div style="font-size:11px;color:#94a3b8">${c.nationalite||''}</div>
+              </td>
+              <td style="font-size:12px">${c.cin||c.passport||'—'}</td>
+              <td style="font-size:12px">${c.phone||'—'}</td>
+              <td>
+                <div style="font-size:12px">${c.permis_num||'—'}</div>
+                <div style="font-size:10px;color:#94a3b8">${c.permis_cat||''} · ${c.permis_exp?daysLeftLabel(c.permis_exp):''}</div>
+              </td>
+              <td style="font-size:12px">${c.ville||'—'}</td>
+              <td>${c.blacklist?'<span style="padding:3px 8px;border-radius:20px;background:#ef444420;color:#ef4444;font-size:11px;font-weight:700">🚫 Blacklist</span>':'<span style="padding:3px 8px;border-radius:20px;background:#22c55e20;color:#22c55e;font-size:11px;font-weight:700">✓ Actif</span>'}</td>
+              <td>
+                <div style="display:flex;gap:4px">
+                  <button class="btn btn-ghost btn-sm" onclick="clientForm(${c.id})">Modifier</button>
+                  <button class="btn btn-success btn-sm" onclick="quickContract(null,${c.id})">📋 Contrat</button>
+                  <button class="btn btn-danger btn-sm" onclick="delItem('clients',${c.id},'ce client')">Suppr.</button>
+                </div>
+              </td>
+            </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:30px">Aucun client — لا يوجد زبائن</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function clientForm(id) {
+  const c = id?state.clients.find(x=>x.id==id):{};
+  const nats = ['Marocaine','Française','Espagnole','Belge','Britannique','Allemande','Américaine','Autre'];
+  openModal(id?'Modifier client':'Nouveau client 👤',`
+    <div class="form-grid">
+      <div class="form-field"><label>Prénom — الاسم *</label><input id="f_prenom" value="${c.prenom||''}" placeholder="Mohammed"></div>
+      <div class="form-field"><label>Nom — اللقب *</label><input id="f_nom" value="${c.nom||''}" placeholder="Alami"></div>
+      <div class="form-field"><label>CIN</label><input id="f_cin" value="${c.cin||''}" placeholder="AB123456"></div>
+      <div class="form-field"><label>Passport</label><input id="f_passport" value="${c.passport||''}" placeholder="AA1234567"></div>
+      <div class="form-field"><label>Téléphone — الهاتف</label><input id="f_phone" value="${c.phone||''}" placeholder="0661234567"></div>
+      <div class="form-field"><label>Email</label><input type="email" id="f_email" value="${c.email||''}" placeholder="client@email.ma"></div>
+      <div class="form-field"><label>Nationalité</label><select id="f_nat">${nats.map(n=>`<option ${c.nationalite==n?'selected':''}>${n}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Ville</label><input id="f_ville" value="${c.ville||''}" placeholder="Casablanca"></div>
+      <div class="form-field"><label>Adresse</label><input id="f_addr" value="${c.adresse||''}" placeholder="Rue Mohammed V"></div>
+      <div class="form-field"><label>N° Permis</label><input id="f_permis" value="${c.permis_num||''}"></div>
+      <div class="form-field"><label>Catégorie permis</label><select id="f_percat">${['B','C','D','E','BC','BE'].map(p=>`<option ${c.permis_cat==p?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Expir. permis</label><input type="date" id="f_perexp" value="${c.permis_exp||''}"></div>
+      <div class="form-field full-width"><label>Notes</label><textarea id="f_notes" rows="2">${c.notes||''}</textarea></div>
+      ${id?`<div class="form-field full-width">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="f_blacklist" ${c.blacklist?'checked':''}>
+          <span style="font-size:13px">🚫 Blacklist — قائمة سوداء</span>
+        </label>
+      </div>`:''}
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveClient(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`
+  );
+}
+
+async function saveClient(id) {
+  const data = {
+    prenom:document.getElementById('f_prenom').value, nom:document.getElementById('f_nom').value,
+    cin:document.getElementById('f_cin').value, passport:document.getElementById('f_passport').value,
+    phone:document.getElementById('f_phone').value, email:document.getElementById('f_email').value,
+    nationalite:document.getElementById('f_nat').value, ville:document.getElementById('f_ville').value,
+    adresse:document.getElementById('f_addr').value, permis_num:document.getElementById('f_permis').value,
+    permis_cat:document.getElementById('f_percat').value, permis_exp:document.getElementById('f_perexp').value,
+    notes:document.getElementById('f_notes').value,
+  };
+  if(id) { const bl = document.getElementById('f_blacklist'); if(bl) data.blacklist = bl.checked; }
+  if(!data.prenom||!data.nom){toast('Prénom et nom requis','error');return;}
+  try {
+    if(id) await api('PUT','/api/clients/'+id,data);
+    else await api('POST','/api/clients',data);
+    closeModal(); await loadAll(); renderPage('clients'); toast('Client sauvegardé ✓','success');
+  } catch(e){toast(e.error||'Erreur','error');}
+}
+
+// ─── RESERVATIONS ─────────────────────────────────────────────────────────────
+function renderReservations(el) {
+  const res = state.reservations||[];
+  el.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Réservations 📅</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">الحجوزات — ${res.length} réservation(s)</div>
+      </div>
+      <button class="btn btn-blue" onclick="reservationForm()">+ Nouvelle réservation</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${res.map(r=>{
+        const car=state.cars.find(c=>c.id==r.car_id), cli=state.clients.find(x=>x.id==r.client_id);
+        const days=Math.ceil((new Date(r.date_fin)-new Date(r.date_debut))/86400000);
+        return `<div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+            <div>
+              <div style="font-size:15px;font-weight:800;color:#3b82f6">${r.id}</div>
+              <div style="font-size:13px;font-weight:700;margin-top:2px">${cli?cli.prenom+' '+cli.nom:'Client non assigné'}</div>
+              <div style="font-size:12px;color:#94a3b8">${car?car.plate+' · '+car.brand+' '+car.model:'Voiture non assignée'}</div>
+            </div>
+            <div style="text-align:right">${badge(r.statut)}<div style="font-size:16px;font-weight:800;color:#3b82f6;margin-top:4px">${fmtMAD(r.total)}</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+            ${[['📅 Début',r.date_debut||'—'],['📅 Fin',r.date_fin||'—'],['⏱ Durée',days+' jour(s)'],['💰 Caution',fmtMAD(r.caution)]].map(([l,v])=>`
+              <div style="padding:8px;background:#ffffff06;border-radius:8px">
+                <div style="font-size:10px;color:#94a3b8">${l}</div>
+                <div style="font-size:12px;font-weight:700">${v}</div>
+              </div>`).join('')}
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="reservationForm('${r.id}')">Modifier</button>
+            ${r.statut==='confirmee'?`<button class="btn btn-success btn-sm" onclick="convertToContrat('${r.id}')">📋 Créer contrat</button>`:''}
+            <button class="btn btn-danger btn-sm" onclick="updateResStatus('${r.id}','annulee')">Annuler</button>
+            <button class="btn btn-danger btn-sm" onclick="delItem('reservations','${r.id}','cette réservation')">Suppr.</button>
+          </div>
+        </div>`;
+      }).join('')||'<div class="card" style="text-align:center;color:#94a3b8;padding:40px">Aucune réservation — لا توجد حجوزات</div>'}
+    </div>`;
+}
+
+function reservationForm(id) {
+  const r = id?state.reservations.find(x=>x.id==id):{};
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now()+86400000).toISOString().split('T')[0];
+  openModal(id?'Modifier réservation':'Nouvelle réservation 📅',`
+    <div class="form-grid">
+      <div class="form-field"><label>Client — الزبون *</label><select id="f_cli"><option value="">-- Choisir --</option>${state.clients.map(c=>`<option value="${c.id}" ${r.client_id==c.id?'selected':''}>${c.prenom} ${c.nom}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Véhicule — السيارة</label><select id="f_car"><option value="">-- Choisir --</option>${state.cars.filter(c=>c.status==='disponible'||c.id==r.car_id).map(c=>`<option value="${c.id}" ${r.car_id==c.id?'selected':''}>${c.plate} · ${c.brand} ${c.model} · ${c.price_day} MAD/j</option>`).join('')}</select></div>
+      <div class="form-field"><label>Date début *</label><input type="date" id="f_deb" value="${r.date_debut||today}" onchange="calcRes()"></div>
+      <div class="form-field"><label>Date fin *</label><input type="date" id="f_fin" value="${r.date_fin||tomorrow}" onchange="calcRes()"></div>
+      <div class="form-field"><label>Prix/jour (MAD)</label><input type="number" id="f_pj" value="${r.prix_jour||0}" oninput="calcRes()"></div>
+      <div class="form-field"><label>Caution (MAD)</label><input type="number" id="f_caut" value="${r.caution||2000}"></div>
+      <div class="form-field"><label>Lieu de prise</label><input id="f_lieu_p" value="${r.lieu_prise||''}" placeholder="Agence, Aéroport..."></div>
+      <div class="form-field"><label>Lieu de retour</label><input id="f_lieu_r" value="${r.lieu_retour||''}" placeholder="Agence, Hôtel..."></div>
+      <div class="form-field"><label>Statut</label><select id="f_stat">${['confirmee','annulee','terminee'].map(s=>`<option value="${s}" ${r.statut==s?'selected':''}>${STATUS_LABELS[s]||s}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Total estimé (MAD)</label><input type="number" id="f_total" value="${r.total||0}"></div>
+      <div class="form-field full-width"><label>Notes</label><textarea id="f_notes" rows="2">${r.notes||''}</textarea></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveReservation('${id||''}')">${id?'Enregistrer':'Créer'}</button>`
+  );
+  // Auto-fill price when car selected
+  document.getElementById('f_car').addEventListener('change', function() {
+    const car = state.cars.find(c=>c.id==this.value);
+    if(car) { document.getElementById('f_pj').value=car.price_day; calcRes(); }
+  });
+}
+
+function calcRes() {
+  const deb = document.getElementById('f_deb')?.value;
+  const fin = document.getElementById('f_fin')?.value;
+  const pj = +document.getElementById('f_pj')?.value||0;
+  if(deb&&fin) {
+    const days = Math.ceil((new Date(fin)-new Date(deb))/86400000);
+    if(days>0&&document.getElementById('f_total')) document.getElementById('f_total').value=days*pj;
+  }
+}
+
+async function saveReservation(id) {
+  const data = {
+    car_id:document.getElementById('f_car').value||null, client_id:document.getElementById('f_cli').value||null,
+    date_debut:document.getElementById('f_deb').value, date_fin:document.getElementById('f_fin').value,
+    prix_jour:+document.getElementById('f_pj').value, total:+document.getElementById('f_total').value,
+    caution:+document.getElementById('f_caut').value, statut:document.getElementById('f_stat').value,
+    lieu_prise:document.getElementById('f_lieu_p').value, lieu_retour:document.getElementById('f_lieu_r').value,
+    notes:document.getElementById('f_notes').value,
+  };
+  if(!data.date_debut||!data.date_fin){toast('Dates obligatoires','error');return;}
+  try {
+    if(id) await api('PUT','/api/reservations/'+id,data);
+    else await api('POST','/api/reservations',data);
+    closeModal(); await loadAll(); renderPage('reservations'); toast('Réservation sauvegardée ✓','success');
+  } catch(e){toast(e.error||'Erreur','error');}
+}
+
+async function updateResStatus(id, statut) {
+  const r = state.reservations.find(x=>x.id==id);
+  if(!r) return;
+  try { await api('PUT','/api/reservations/'+id,{...r,statut}); await loadAll(); renderPage('reservations'); toast('Statut mis à jour','success'); } catch(e){}
+}
+
+function convertToContrat(resId) {
+  const r = state.reservations.find(x=>x.id==resId);
+  if(!r) return;
+  const days = Math.ceil((new Date(r.date_fin)-new Date(r.date_debut))/86400000);
+  // Pre-fill contrat form
+  window._prefillContrat = {
+    car_id:r.car_id, client_id:r.client_id, reservation_id:r.id,
+    date_debut:r.date_debut, date_fin:r.date_fin,
+    prix_jour:r.prix_jour, jours:days, total:r.total, caution:r.caution
+  };
+  showPage('contrats');
+  setTimeout(()=>contratForm(), 300);
+}
+
+// ─── CONTRATS ─────────────────────────────────────────────────────────────────
+function renderContrats(el) {
+  const contrats = state.contrats||[];
+  el.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Contrats de location 📋</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">عقود التأجير — ${contrats.length} contrat(s)</div>
+      </div>
+      <button class="btn btn-blue" onclick="contratForm()">+ Nouveau contrat</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${contrats.map(c=>{
+        const car=state.cars.find(v=>v.id==c.car_id), cli=state.clients.find(x=>x.id==c.client_id);
+        const kmDone = c.km_retour>0?(c.km_retour-c.km_depart):0;
+        return `<div class="card" style="border-left:4px solid ${STATUS_COLORS[c.statut]||'#64748b'}">
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+            <div style="display:flex;gap:14px;align-items:center">
+              <div>
+                <div style="font-size:15px;font-weight:800;color:#3b82f6">${c.id}</div>
+                <div style="font-size:12px;color:#94a3b8">${c.created_at?.slice(0,10)||''}</div>
+              </div>
+              <div style="width:1px;height:32px;background:#1a2744"></div>
+              <div>
+                <div style="font-size:14px;font-weight:700">${cli?cli.prenom+' '+cli.nom:'—'}</div>
+                <div style="font-size:12px;color:#94a3b8">${car?car.plate+' · '+car.brand+' '+car.model:'—'}</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              ${badge(c.statut)}
+              <div style="font-size:18px;font-weight:800;color:#3b82f6;margin-top:4px">${fmtMAD(c.total)}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px">
+            ${[
+              ['Début',c.date_debut||'—'],['Fin',c.date_fin||'—'],
+              ['Jours',c.jours||'—'],['Km départ',Number(c.km_depart||0).toLocaleString()],
+              ['Km retour',c.km_retour>0?Number(c.km_retour).toLocaleString()+'('+kmDone+'km)':'—'],
+            ].map(([l,v])=>`<div style="padding:8px;background:#ffffff06;border-radius:8px">
+              <div style="font-size:9px;color:#94a3b8">${l}</div>
+              <div style="font-size:11px;font-weight:700">${v}</div>
+            </div>`).join('')}
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div style="display:flex;gap:12px">
+              <span style="font-size:12px;color:#94a3b8">Extras: <strong style="color:#f1f5f9">${fmtMAD(c.extras||0)}</strong></span>
+              <span style="font-size:12px;color:#94a3b8">Remise: <strong style="color:#22c55e">-${fmtMAD(c.remise||0)}</strong></span>
+              <span style="font-size:12px;color:#94a3b8">Caution: <strong style="color:${c.caution_rendue?'#22c55e':'#f59e0b'}">${fmtMAD(c.caution||0)} ${c.caution_rendue?'✓ rendue':'⏳'}</strong></span>
+            </div>
+            <span style="font-size:12px;color:#94a3b8">${c.mode_paiement||''}</span>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${c.statut==='en_cours'?`<button class="btn btn-success btn-sm" onclick="closeContrat('${c.id}')">✓ Clôturer</button>`:''}
+            <button class="btn btn-ghost btn-sm" onclick="contratForm('${c.id}')">Modifier</button>
+            <button class="btn btn-ghost btn-sm" onclick="printContrat('${c.id}')">🖨 Imprimer</button>
+            <button class="btn btn-success btn-sm" onclick="createFactureFromContrat('${c.id}')">💰 Facture</button>
+            <button class="btn btn-danger btn-sm" onclick="delItem('contrats','${c.id}','ce contrat')">Suppr.</button>
+          </div>
+        </div>`;
+      }).join('')||'<div class="card" style="text-align:center;color:#94a3b8;padding:40px">Aucun contrat — لا توجد عقود</div>'}
+    </div>`;
+}
+
+function contratForm(id) {
+  const c = id?state.contrats.find(x=>x.id==id):{};
+  const pf = window._prefillContrat||{};
+  window._prefillContrat = null;
+  const today = new Date().toISOString().split('T')[0];
+  openModal(id?'Modifier contrat':'Nouveau contrat 📋',`
+    <div class="form-grid">
+      <div class="form-field"><label>Client *</label><select id="f_cli" onchange="calcContrat()"><option value="">-- Choisir --</option>${state.clients.map(c=>`<option value="${c.id}" ${(c.id==(id?c.client_id:pf.client_id)||'')}`).join('')}${state.clients.map(cl=>`<option value="${cl.id}" ${(cl.id==(id?c.client_id:pf.client_id)?'selected':'')}>${cl.prenom} ${cl.nom} · ${cl.cin||cl.passport}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Véhicule *</label><select id="f_car" onchange="calcContrat()"><option value="">-- Choisir --</option>${state.cars.map(v=>`<option value="${v.id}" ${v.id==(id?c.car_id:pf.car_id)?'selected':''}>${v.plate} · ${v.brand} ${v.model} · ${v.price_day} MAD/j</option>`).join('')}</select></div>
+      <div class="form-field"><label>Date début</label><input type="date" id="f_deb" value="${id?c.date_debut:pf.date_debut||today}" onchange="calcContrat()"></div>
+      <div class="form-field"><label>Date fin prévue</label><input type="date" id="f_fin" value="${id?c.date_fin:pf.date_fin||today}" onchange="calcContrat()"></div>
+      <div class="form-field"><label>Km départ</label><input type="number" id="f_kmd" value="${id?c.km_depart:0}"></div>
+      <div class="form-field"><label>Km retour</label><input type="number" id="f_kmr" value="${id?c.km_retour:0}"></div>
+      <div class="form-field"><label>Prix/jour (MAD)</label><input type="number" id="f_pj" value="${id?c.prix_jour:pf.prix_jour||0}" oninput="calcContrat()"></div>
+      <div class="form-field"><label>Nb jours</label><input type="number" id="f_jours" value="${id?c.jours:pf.jours||1}" oninput="calcContrat()"></div>
+      <div class="form-field"><label>Extras (MAD)</label><input type="number" id="f_extras" value="${id?c.extras:0}" oninput="calcContrat()"></div>
+      <div class="form-field"><label>Remise (MAD)</label><input type="number" id="f_remise" value="${id?c.remise:0}" oninput="calcContrat()"></div>
+      <div class="form-field"><label>Total (MAD)</label><input type="number" id="f_total" value="${id?c.total:pf.total||0}"></div>
+      <div class="form-field"><label>Caution (MAD)</label><input type="number" id="f_caut" value="${id?c.caution:pf.caution||2000}"></div>
+      <div class="form-field"><label>Mode paiement</label><select id="f_pay">${['Espèces','Virement','Chèque','Carte','CB'].map(p=>`<option ${(id?c.mode_paiement:'')==p?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="form-field"><label>État départ véhicule</label><select id="f_etat">${['bon','quelques égratignures','légère rayure','carrosserie endommagée'].map(e=>`<option ${(id?c.etat_depart:'')==e?'selected':''}>${e}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Statut</label><select id="f_stat">${['en_cours','termine','annule'].map(s=>`<option value="${s}" ${(id?c.statut:'')==s?'selected':''}>${STATUS_LABELS[s]||s}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Caution rendue</label><select id="f_cautr"><option value="0" ${!c.caution_rendue?'selected':''}>Non</option><option value="1" ${c.caution_rendue?'selected':''}>Oui</option></select></div>
+      <div class="form-field full-width"><label>Notes</label><textarea id="f_notes" rows="2">${id?c.notes:''}</textarea></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveContrat('${id||''}')">${id?'Enregistrer':'Créer contrat'}</button>`
+  );
+  // Auto-fill price from car
+  document.getElementById('f_car').addEventListener('change',function(){
+    const car=state.cars.find(v=>v.id==this.value);
+    if(car){document.getElementById('f_pj').value=car.price_day;calcContrat();}
+  });
+}
+
+function calcContrat() {
+  const deb=document.getElementById('f_deb')?.value, fin=document.getElementById('f_fin')?.value;
+  const pj=+document.getElementById('f_pj')?.value||0;
+  const extras=+document.getElementById('f_extras')?.value||0;
+  const remise=+document.getElementById('f_remise')?.value||0;
+  if(deb&&fin){
+    const days=Math.max(1,Math.ceil((new Date(fin)-new Date(deb))/86400000));
+    if(document.getElementById('f_jours')) document.getElementById('f_jours').value=days;
+    if(document.getElementById('f_total')) document.getElementById('f_total').value=days*pj+extras-remise;
+  }
+}
+
+async function saveContrat(id) {
+  const data = {
+    car_id:document.getElementById('f_car').value||null, client_id:document.getElementById('f_cli').value||null,
+    date_debut:document.getElementById('f_deb').value, date_fin:document.getElementById('f_fin').value,
+    km_depart:+document.getElementById('f_kmd').value, km_retour:+document.getElementById('f_kmr').value,
+    prix_jour:+document.getElementById('f_pj').value, jours:+document.getElementById('f_jours').value,
+    extras:+document.getElementById('f_extras').value, remise:+document.getElementById('f_remise').value,
+    total:+document.getElementById('f_total').value, caution:+document.getElementById('f_caut').value,
+    mode_paiement:document.getElementById('f_pay').value, etat_depart:document.getElementById('f_etat').value,
+    statut:document.getElementById('f_stat').value, caution_rendue:document.getElementById('f_cautr').value==='1',
+    notes:document.getElementById('f_notes').value,
+  };
+  if(!data.car_id||!data.client_id){toast('Véhicule et client requis','error');return;}
+  try {
+    if(id) await api('PUT','/api/contrats/'+id,data);
+    else await api('POST','/api/contrats',data);
+    closeModal(); await loadAll(); renderPage('contrats'); toast('Contrat sauvegardé ✓','success');
+  } catch(e){toast(e.error||'Erreur','error');}
+}
+
+function closeContrat(id) {
+  openModal('Clôturer le contrat',`
+    <div class="form-grid">
+      <div class="form-field"><label>Date retour réel</label><input type="date" id="f_retour" value="${new Date().toISOString().split('T')[0]}"></div>
+      <div class="form-field"><label>Km retour</label><input type="number" id="f_kmr" value="0"></div>
+      <div class="form-field"><label>État retour véhicule</label><select id="f_etat">${['bon','quelques égratignures','légère rayure','carrosserie endommagée','sinistre'].map(e=>`<option>${e}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Extras supplémentaires (MAD)</label><input type="number" id="f_extras" value="0"></div>
+      <div class="form-field"><label>Caution rendue</label><select id="f_cautr"><option value="1">Oui — rendue au client</option><option value="0">Non — retenue</option></select></div>
+      <div class="form-field full-width"><label>Notes de retour</label><textarea id="f_notes" rows="2" placeholder="Carburant, dommages, remarques..."></textarea></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-success" onclick="doCloseContrat('${id}')">✓ Confirmer clôture</button>`
+  );
+}
+
+async function doCloseContrat(id) {
+  const c = state.contrats.find(x=>x.id==id);
+  if(!c) return;
+  const data = {
+    ...c, statut:'termine',
+    date_retour_reel:document.getElementById('f_retour').value,
+    km_retour:+document.getElementById('f_kmr').value,
+    etat_retour:document.getElementById('f_etat').value,
+    extras:(c.extras||0)+(+document.getElementById('f_extras').value||0),
+    caution_rendue:document.getElementById('f_cautr').value==='1',
+    notes:document.getElementById('f_notes').value,
+  };
+  // Recalculate total
+  const newTotal = c.jours*c.prix_jour+data.extras-(c.remise||0);
+  data.total = newTotal;
+  try {
+    await api('PUT','/api/contrats/'+id,data);
+    // Update car km
+    if(data.km_retour>0) await api('PUT','/api/cars/'+c.car_id,{...state.cars.find(v=>v.id==c.car_id),km:data.km_retour,status:'disponible'});
+    closeModal(); await loadAll(); renderPage('contrats');
+    toast('Contrat clôturé ✓ — Véhicule disponible','success');
+  } catch(e){toast(e.error||'Erreur','error');}
+}
+
+function printContrat(id) {
+  const c = state.contrats.find(x=>x.id==id);
+  if(!c) return;
+  const car = state.cars.find(v=>v.id==c.car_id)||{};
+  const cli = state.clients.find(x=>x.id==c.client_id)||{};
+  const w = window.open('','_blank','width=800,height=600');
+  w.document.write(`<!DOCTYPE html><html><head><title>Contrat ${c.id}</title>
+  <style>body{font-family:Arial,sans-serif;padding:32px;color:#111;font-size:13px} h2{color:#1d4ed8;text-align:center} .logo{text-align:center;font-size:22px;font-weight:900;margin-bottom:4px} .line{border:1px solid #ddd;margin:14px 0} .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px} .section{margin-bottom:16px} .section h3{background:#f0f4ff;padding:6px 12px;border-radius:4px;font-size:13px;color:#1d4ed8} .row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f0f0} .total{background:#f0f4ff;padding:10px;border-radius:6px;text-align:right;font-size:16px;font-weight:900} .sign{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px} .sign-box{border-top:1px solid #999;padding-top:8px;font-size:12px;color:#666}</style>
+  </head><body>
+  <div class="logo">🚗 CarLoc Manager</div>
+  <div style="text-align:center;color:#666;margin-bottom:16px">${currentAccount.company||'Société de location de voitures'}</div>
+  <h2>CONTRAT DE LOCATION — عقد الإيجار<br><span style="font-size:14px;color:#666">${c.id}</span></h2>
+  <div class="line"></div>
+  <div class="grid">
+    <div class="section"><h3>🚗 Véhicule — السيارة</h3>
+      <div class="row"><span>Immatriculation</span><strong>${car.plate||'—'}</strong></div>
+      <div class="row"><span>Marque/Modèle</span><strong>${car.brand||''} ${car.model||''}</strong></div>
+      <div class="row"><span>Catégorie</span><strong>${car.category||''}</strong></div>
+      <div class="row"><span>Km départ</span><strong>${Number(c.km_depart||0).toLocaleString()} km</strong></div>
+    </div>
+    <div class="section"><h3>👤 Client — الزبون</h3>
+      <div class="row"><span>Nom complet</span><strong>${cli.prenom||''} ${cli.nom||''}</strong></div>
+      <div class="row"><span>CIN / Passport</span><strong>${cli.cin||cli.passport||'—'}</strong></div>
+      <div class="row"><span>Téléphone</span><strong>${cli.phone||'—'}</strong></div>
+      <div class="row"><span>Permis N°</span><strong>${cli.permis_num||'—'} (${cli.permis_cat||'B'})</strong></div>
+    </div>
+  </div>
+  <div class="section"><h3>📅 Période de location — فترة الإيجار</h3>
+    <div class="grid">
+      <div class="row"><span>Date de départ</span><strong>${c.date_debut||'—'}</strong></div>
+      <div class="row"><span>Date de retour prévue</span><strong>${c.date_fin||'—'}</strong></div>
+      <div class="row"><span>Durée</span><strong>${c.jours||0} jour(s)</strong></div>
+      <div class="row"><span>Prix/jour</span><strong>${Number(c.prix_jour||0).toLocaleString()} MAD</strong></div>
+    </div>
+  </div>
+  <div class="section"><h3>💰 Facturation — الفاتورة</h3>
+    <div class="row"><span>Sous-total (${c.jours} j × ${c.prix_jour} MAD)</span><strong>${Number((c.jours||0)*(c.prix_jour||0)).toLocaleString()} MAD</strong></div>
+    ${c.extras>0?`<div class="row"><span>Extras</span><strong>${Number(c.extras||0).toLocaleString()} MAD</strong></div>`:''}
+    ${c.remise>0?`<div class="row"><span>Remise</span><strong>- ${Number(c.remise||0).toLocaleString()} MAD</strong></div>`:''}
+    <div class="row"><span>Caution</span><strong>${Number(c.caution||0).toLocaleString()} MAD</strong></div>
+    <div class="row"><span>Mode de paiement</span><strong>${c.mode_paiement||'Espèces'}</strong></div>
+    <div class="total">TOTAL : ${Number(c.total||0).toLocaleString()} MAD</div>
+  </div>
+  <div class="line"></div>
+  <div style="font-size:11px;color:#666;margin-bottom:20px">
+    <strong>Conditions :</strong> Le client est responsable du véhicule pendant toute la durée de la location. Toute dégradation sera déduite de la caution. Retour du véhicule dans l'état initial avec le plein de carburant.
+  </div>
+  <div class="sign">
+    <div class="sign-box">Signature du client — توقيع الزبون<br><br><br></div>
+    <div class="sign-box">Signature de l'agence — توقيع الوكالة<br><br><br></div>
+  </div>
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
+}
+
+function quickContract(carId, clientId) {
+  window._prefillContrat = { car_id:carId, client_id:clientId, prix_jour:carId?state.cars.find(c=>c.id==carId)?.price_day||0:0 };
+  showPage('contrats');
+  setTimeout(()=>contratForm(), 300);
+}
+
+function createFactureFromContrat(contratId) {
+  const c = state.contrats.find(x=>x.id==contratId);
+  if(!c) return;
+  const tva = 20;
+  const ht = Math.round(c.total/1.2*100)/100;
+  openModal('Créer une facture',`
+    <div class="form-grid">
+      <div class="form-field"><label>Montant HT (MAD)</label><input type="number" id="f_ht" value="${ht}" oninput="calcFac()"></div>
+      <div class="form-field"><label>TVA (%)</label><input type="number" id="f_tva" value="${tva}" oninput="calcFac()"></div>
+      <div class="form-field"><label>Montant TTC</label><input type="number" id="f_ttc" value="${c.total}"></div>
+      <div class="form-field"><label>Mode paiement</label><select id="f_pay">${['Espèces','Virement','Chèque','Carte'].map(p=>`<option ${c.mode_paiement==p?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Date échéance</label><input type="date" id="f_ech" value="${new Date(Date.now()+7*86400000).toISOString().split('T')[0]}"></div>
+      <div class="form-field"><label>Statut</label><select id="f_fstat"><option value="en_attente">En attente</option><option value="paye">Payé</option></select></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="doCreateFacture('${contratId}','${c.client_id}')">Créer la facture</button>`
+  );
+}
+
+function calcFac() {
+  const ht=+document.getElementById('f_ht')?.value||0, tva=+document.getElementById('f_tva')?.value||20;
+  if(document.getElementById('f_ttc')) document.getElementById('f_ttc').value=Math.round(ht*(1+tva/100)*100)/100;
+}
+
+async function doCreateFacture(contratId, clientId) {
+  const data = {
+    contrat_id:contratId, client_id:clientId,
+    montant:+document.getElementById('f_ht').value, tva:+document.getElementById('f_tva').value,
+    statut:document.getElementById('f_fstat').value,
+    date_emission:new Date().toISOString().split('T')[0],
+    date_echeance:document.getElementById('f_ech').value,
+    mode_paiement:document.getElementById('f_pay').value,
+  };
+  try { await api('POST','/api/factures',data); closeModal(); await loadAll(); toast('Facture créée ✓','success'); } catch(e){toast(e.error||'Erreur','error');}
+}
+
+// ─── FACTURES ─────────────────────────────────────────────────────────────────
+function renderFactures(el) {
+  const facs = state.factures||[];
+  const paid = facs.filter(f=>f.statut==='paye').reduce((a,f)=>a+Number(f.montant_ttc||f.montant||0),0);
+  const pend = facs.filter(f=>f.statut==='en_attente').reduce((a,f)=>a+Number(f.montant_ttc||f.montant||0),0);
+  el.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Facturation 💰</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">الفواتير — ${facs.length} facture(s)</div>
+      </div>
+      <button class="btn btn-blue" onclick="factureForm()">+ Nouvelle facture</button>
+    </div>
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
+      <div class="stat-card"><div class="stat-icon" style="background:#22c55e18">✅</div><div class="stat-value" style="color:#22c55e">${fmtMAD(paid)}</div><div class="stat-label">Encaissé — مقبوض</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#f59e0b18">⏳</div><div class="stat-value" style="color:#f59e0b">${fmtMAD(pend)}</div><div class="stat-label">En attente — في الانتظار</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#3b82f618">📄</div><div class="stat-value" style="color:#3b82f6">${facs.length}</div><div class="stat-label">Total factures</div></div>
+    </div>
+    <div class="card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>N° Facture</th><th>Client</th><th>Contrat</th><th>HT</th><th>TVA</th><th>TTC</th><th>Paiement</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${facs.map(f=>{
+            const cli=state.clients.find(x=>x.id==f.client_id);
+            return `<tr>
+              <td style="font-weight:700;color:#3b82f6">${f.id}</td>
+              <td>${cli?cli.prenom+' '+cli.nom:'—'}</td>
+              <td style="font-size:11px;color:#94a3b8">${f.contrat_id||'—'}</td>
+              <td>${fmtMAD(f.montant)}</td>
+              <td style="color:#94a3b8">${f.tva}%</td>
+              <td style="font-weight:800;color:#3b82f6">${fmtMAD(f.montant_ttc)}</td>
+              <td style="font-size:12px">${f.mode_paiement||'—'}</td>
+              <td>${badge(f.statut)}</td>
+              <td>
+                <div style="display:flex;gap:4px">
+                  ${f.statut!=='paye'?`<button class="btn btn-success btn-sm" onclick="markFacPaid('${f.id}')">Payé</button>`:''}
+                  <button class="btn btn-danger btn-sm" onclick="delItem('factures','${f.id}','cette facture')">Suppr.</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')||'<tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:30px">Aucune facture</td></tr>'}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+function factureForm() {
+  openModal('Nouvelle facture 💰',`
+    <div class="form-grid">
+      <div class="form-field"><label>Client</label><select id="f_cli"><option value="">-- Choisir --</option>${state.clients.map(c=>`<option value="${c.id}">${c.prenom} ${c.nom}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Contrat lié</label><select id="f_ctr"><option value="">-- Optionnel --</option>${state.contrats.map(c=>`<option value="${c.id}">${c.id}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Montant HT (MAD)</label><input type="number" id="f_ht" oninput="calcFac()"></div>
+      <div class="form-field"><label>TVA (%)</label><input type="number" id="f_tva" value="20" oninput="calcFac()"></div>
+      <div class="form-field"><label>Montant TTC</label><input type="number" id="f_ttc"></div>
+      <div class="form-field"><label>Mode paiement</label><select id="f_pay">${['Espèces','Virement','Chèque','Carte'].map(p=>`<option>${p}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Date émission</label><input type="date" id="f_em" value="${new Date().toISOString().split('T')[0]}"></div>
+      <div class="form-field"><label>Date échéance</label><input type="date" id="f_ech" value="${new Date(Date.now()+7*86400000).toISOString().split('T')[0]}"></div>
+      <div class="form-field"><label>Statut</label><select id="f_fstat"><option value="en_attente">En attente</option><option value="paye">Payé</option></select></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveFacture()">Créer</button>`
+  );
+}
+
+async function saveFacture() {
+  const data = { client_id:document.getElementById('f_cli').value||null, contrat_id:document.getElementById('f_ctr').value||null, montant:+document.getElementById('f_ht').value, tva:+document.getElementById('f_tva').value, statut:document.getElementById('f_fstat').value, date_emission:document.getElementById('f_em').value, date_echeance:document.getElementById('f_ech').value, mode_paiement:document.getElementById('f_pay').value };
+  if(!data.montant){toast('Montant requis','error');return;}
+  try { await api('POST','/api/factures',data); closeModal(); await loadAll(); renderPage('factures'); toast('Facture créée ✓','success'); } catch(e){toast(e.error||'Erreur','error');}
+}
+
+async function markFacPaid(id) {
+  const f = state.factures.find(x=>x.id==id);
+  if(!f) return;
+  try { await api('PUT','/api/factures/'+id,{statut:'paye',mode_paiement:f.mode_paiement}); await loadAll(); renderPage('factures'); toast('Facture marquée payée ✓','success'); } catch(e){}
+}
+
+// ─── SINISTRES ────────────────────────────────────────────────────────────────
+function renderSinistres(el) {
+  const sins = state.sinistres||[];
+  el.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Sinistres & Accidents 🚨</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">الحوادث والأضرار — ${sins.length} sinistre(s)</div>
+      </div>
+      <button class="btn btn-blue" onclick="sinistreForm()">+ Déclarer sinistre</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px">
+      <div class="stat-card"><div class="stat-icon" style="background:#ef444418">🚨</div><div class="stat-value" style="color:#ef4444">${sins.filter(s=>s.statut==='ouvert').length}</div><div class="stat-label">Ouverts — مفتوحة</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#f59e0b18">⚙️</div><div class="stat-value" style="color:#f59e0b">${sins.filter(s=>s.statut==='en_traitement').length}</div><div class="stat-label">En traitement</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#22c55e18">💰</div><div class="stat-value" style="color:#ef4444">${fmtMAD(sins.reduce((a,s)=>a+Number(s.cout_reparation||0),0))}</div><div class="stat-label">Coût total réparations</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${sins.map(s=>{
+        const car=state.cars.find(c=>c.id==s.car_id), cli=state.clients.find(x=>x.id==s.client_id);
+        const gravColors={Mineur:'#22c55e',Modéré:'#f59e0b',Grave:'#ef4444',Total:'#7f1d1d'};
+        return `<div class="card" style="border-left:4px solid ${STATUS_COLORS[s.statut]||'#64748b'}">
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+            <div>
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
+                <span style="font-size:15px;font-weight:800">🚨 ${s.type_sinistre}</span>
+                <span style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${(gravColors[s.gravite]||'#64748b')}20;color:${gravColors[s.gravite]||'#64748b'}">${s.gravite}</span>
+                ${badge(s.statut)}
+              </div>
+              <div style="font-size:12px;color:#94a3b8">${car?car.plate+' · '+car.brand+' '+car.model:'—'} · ${cli?cli.prenom+' '+cli.nom:'—'}</div>
+              <div style="font-size:12px;color:#475569">${s.date_sinistre||''} · ${s.lieu||''}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:16px;font-weight:800;color:#ef4444">${fmtMAD(s.cout_reparation||0)}</div>
+              <div style="font-size:11px;color:${s.assurance_declaree?'#22c55e':'#94a3b8'}">${s.assurance_declaree?'✓ Assurance déclarée':'Assurance non déclarée'}</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:12px">${s.description||''}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${s.statut==='ouvert'?`<button class="btn btn-warning btn-sm" onclick="updateSinistre(${s.id},'en_traitement')">⚙ En traitement</button>`:''}
+            ${s.statut==='en_traitement'?`<button class="btn btn-success btn-sm" onclick="updateSinistre(${s.id},'ferme')">✓ Clôturer</button>`:''}
+            <button class="btn btn-ghost btn-sm" onclick="sinistreForm(${s.id})">Modifier</button>
+            <button class="btn btn-danger btn-sm" onclick="delItem('sinistres',${s.id},'ce sinistre')">Suppr.</button>
+          </div>
+        </div>`;
+      }).join('')||'<div class="card" style="text-align:center;color:#94a3b8;padding:40px">Aucun sinistre — لا توجد حوادث</div>'}
+    </div>`;
+}
+
+function sinistreForm(id) {
+  const s = id?state.sinistres.find(x=>x.id==id):{};
+  const types = ['Accident','Vandalisme','Vol','Panne','Égratignure','Bris de glace','Autre'];
+  const gravites = ['Mineur','Modéré','Grave','Total'];
+  openModal(id?'Modifier sinistre':'Déclarer un sinistre 🚨',`
+    <div class="form-grid">
+      <div class="form-field"><label>Véhicule</label><select id="f_car"><option value="">-- Choisir --</option>${state.cars.map(c=>`<option value="${c.id}" ${s.car_id==c.id?'selected':''}>${c.plate} · ${c.brand} ${c.model}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Client responsable</label><select id="f_cli"><option value="">-- Choisir --</option>${state.clients.map(c=>`<option value="${c.id}" ${s.client_id==c.id?'selected':''}>${c.prenom} ${c.nom}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Type sinistre</label><select id="f_type">${types.map(t=>`<option ${s.type_sinistre==t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Gravité</label><select id="f_grav">${gravites.map(g=>`<option ${s.gravite==g?'selected':''}>${g}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Date sinistre</label><input type="date" id="f_date" value="${s.date_sinistre||new Date().toISOString().split('T')[0]}"></div>
+      <div class="form-field"><label>Lieu</label><input id="f_lieu" value="${s.lieu||''}" placeholder="Autoroute A1, Casablanca..."></div>
+      <div class="form-field"><label>Coût réparation (MAD)</label><input type="number" id="f_cout" value="${s.cout_reparation||0}"></div>
+      <div class="form-field"><label>Réf. assurance</label><input id="f_assref" value="${s.assurance_ref||''}"></div>
+      <div class="form-field full-width"><label>Description</label><textarea id="f_desc" rows="2">${s.description||''}</textarea></div>
+      <div class="form-field"><label><input type="checkbox" id="f_ass" ${s.assurance_declaree?'checked':''}> Déclaré à l'assurance</label></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveSinistre(${id||0})">${id?'Enregistrer':'Déclarer'}</button>`
+  );
+}
+
+async function saveSinistre(id) {
+  const data = { car_id:document.getElementById('f_car').value||null, client_id:document.getElementById('f_cli').value||null, type_sinistre:document.getElementById('f_type').value, gravite:document.getElementById('f_grav').value, date_sinistre:document.getElementById('f_date').value, lieu:document.getElementById('f_lieu').value, cout_reparation:+document.getElementById('f_cout').value, assurance_ref:document.getElementById('f_assref').value, description:document.getElementById('f_desc').value, assurance_declaree:document.getElementById('f_ass').checked };
+  try {
+    if(id) await api('PUT','/api/sinistres/'+id,{...data,statut:(state.sinistres.find(x=>x.id==id)||{}).statut||'ouvert',notes:data.description});
+    else await api('POST','/api/sinistres',data);
+    closeModal(); await loadAll(); renderPage('sinistres'); toast('Sinistre sauvegardé ✓','success');
+  } catch(e){toast(e.error||'Erreur','error');}
+}
+
+async function updateSinistre(id, statut) {
+  const s = state.sinistres.find(x=>x.id==id);
+  if(!s) return;
+  try { await api('PUT','/api/sinistres/'+id,{statut,cout_reparation:s.cout_reparation,assurance_declaree:s.assurance_declaree,assurance_ref:s.assurance_ref,notes:s.description}); await loadAll(); renderPage('sinistres'); toast('Statut mis à jour ✓','success'); } catch(e){}
+}
+
+// ─── MAINTENANCE ──────────────────────────────────────────────────────────────
+function renderMaintenance(el) {
+  const maints = state.maintenances||[];
+  el.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Maintenance 🔧</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">الصيانة — ${maints.length} intervention(s)</div>
+      </div>
+      <button class="btn btn-blue" onclick="maintenanceForm()">+ Planifier</button>
+    </div>
+    <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px">
+      ${[['🔧','Planifiées','planifie','#3b82f6'],['🚨','Urgentes','urgent','#ef4444'],['⚙️','En cours','en_cours','#f97316'],['✅','Terminées','termine','#22c55e']].map(([i,l,s,c])=>`
+        <div class="stat-card"><div class="stat-icon" style="background:${c}18">${i}</div><div class="stat-value" style="color:${c}">${maints.filter(m=>m.statut===s).length}</div><div class="stat-label">${l}</div></div>`).join('')}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${maints.map(m=>{
+        const car=state.cars.find(c=>c.id==m.car_id);
+        const c=STATUS_COLORS[m.statut]||'#64748b';
+        return `<div class="card" style="border-left:4px solid ${c}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:44px;height:44px;border-radius:12px;background:${c}18;display:flex;align-items:center;justify-content:center;font-size:20px">🔧</div>
+              <div>
+                <div style="font-size:14px;font-weight:800">${m.type}</div>
+                <div style="font-size:12px;color:#94a3b8">${car?car.plate+' · '+car.brand+' '+car.model:'—'}</div>
+                <div style="font-size:11px;color:#475569">${m.date_prevue||''} · ${m.garage||''}</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:15px;font-weight:800;color:#3b82f6">${fmtMAD(m.cout||0)}</div>
+              ${badge(m.statut)}
+            </div>
+          </div>
+          <div style="display:flex;gap:6px">
+            ${m.statut==='planifie'?`<button class="btn btn-warning btn-sm" onclick="updateMaint(${m.id},'en_cours')">▶ Démarrer</button>`:''}
+            ${m.statut==='en_cours'?`<button class="btn btn-success btn-sm" onclick="updateMaint(${m.id},'termine')">✓ Terminer</button>`:''}
+            <button class="btn btn-ghost btn-sm" onclick="maintenanceForm(${m.id})">Modifier</button>
+            <button class="btn btn-danger btn-sm" onclick="delItem('maintenances',${m.id},'cette maintenance')">Suppr.</button>
+          </div>
+        </div>`;
+      }).join('')||'<div class="card" style="text-align:center;color:#94a3b8;padding:40px">Aucune maintenance planifiée</div>'}
+    </div>`;
+}
+
+function maintenanceForm(id) {
+  const m = id?state.maintenances.find(x=>x.id==id):{};
+  const types=['Vidange','Freins','Pneus','Filtres','Courroie','Batterie','Climatisation','Révision','Carrosserie','Autre'];
+  openModal(id?'Modifier maintenance':'Planifier maintenance 🔧',`
+    <div class="form-grid">
+      <div class="form-field"><label>Véhicule</label><select id="f_car"><option value="">-- Choisir --</option>${state.cars.map(c=>`<option value="${c.id}" ${m.car_id==c.id?'selected':''}>${c.plate} · ${c.brand}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Type</label><select id="f_type">${types.map(t=>`<option ${m.type==t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Date prévue</label><input type="date" id="f_date" value="${m.date_prevue||''}"></div>
+      <div class="form-field"><label>Km prévu</label><input type="number" id="f_km" value="${m.km_prevu||0}"></div>
+      <div class="form-field"><label>Coût estimé (MAD)</label><input type="number" id="f_cout" value="${m.cout||0}"></div>
+      <div class="form-field"><label>Garage</label><input id="f_garage" value="${m.garage||''}" placeholder="Garage Auto Service"></div>
+      <div class="form-field full-width"><label>Description</label><textarea id="f_desc" rows="2">${m.description||''}</textarea></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveMaintenance(${id||0})">${id?'Enregistrer':'Planifier'}</button>`
+  );
+}
+
+async function saveMaintenance(id) {
+  const data={car_id:document.getElementById('f_car').value||null,type:document.getElementById('f_type').value,date_prevue:document.getElementById('f_date').value,km_prevu:+document.getElementById('f_km').value,cout:+document.getElementById('f_cout').value,garage:document.getElementById('f_garage').value,description:document.getElementById('f_desc').value};
+  try {
+    if(id) await api('PUT','/api/maintenances/'+id,{...data,statut:(state.maintenances.find(x=>x.id==id)||{}).statut||'planifie'});
+    else await api('POST','/api/maintenances',data);
+    closeModal(); await loadAll(); renderPage('maintenance'); toast('Maintenance sauvegardée ✓','success');
+  } catch(e){toast(e.error||'Erreur','error');}
+}
+
+async function updateMaint(id, statut) {
+  const m=state.maintenances.find(x=>x.id==id);
+  if(!m) return;
+  try { await api('PUT','/api/maintenances/'+id,{...m,statut,date_reelle:statut==='termine'?new Date().toISOString().split('T')[0]:''}); await loadAll(); renderPage('maintenance'); toast('Statut mis à jour','success'); } catch(e){}
+}
+
+// ─── DEPENSES ─────────────────────────────────────────────────────────────────
+function renderDepenses(el) {
+  const deps = state.depenses||[];
+  const total = deps.reduce((a,d)=>a+Number(d.montant||0),0);
+  el.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Dépenses 💸</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">المصاريف · Total: ${fmtMAD(total)}</div>
+      </div>
+      <button class="btn btn-blue" onclick="depenseForm()">+ Ajouter</button>
+    </div>
+    <div class="card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Véhicule</th><th>Type</th><th>Description</th><th>Date</th><th>Montant</th><th>Justif.</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${deps.map(d=>{
+            const car=state.cars.find(c=>c.id==d.car_id);
+            return `<tr>
+              <td style="font-size:12px">${car?car.plate:'—'}</td>
+              <td><span style="padding:2px 8px;border-radius:20px;background:#3b82f618;color:#3b82f6;font-size:11px;font-weight:700">${d.type||'—'}</span></td>
+              <td style="font-size:12px;color:#94a3b8">${d.description||'—'}</td>
+              <td style="font-size:12px">${d.date||'—'}</td>
+              <td style="font-weight:800;color:#ef4444">${fmtMAD(d.montant||0)}</td>
+              <td>${d.justif?'<span style="color:#22c55e;font-size:12px">✓ Oui</span>':'<span style="color:#f59e0b;font-size:12px">⚠ Non</span>'}</td>
+              <td><button class="btn btn-danger btn-sm" onclick="delItem('depenses',${d.id},'cette dépense')">Suppr.</button></td>
+            </tr>`;
+          }).join('')||'<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:30px">Aucune dépense</td></tr>'}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+function depenseForm() {
+  const types=['Carburant','Entretien','Assurance','Vignette','Lavage','Péage','Amende','Autre'];
+  openModal('Nouvelle dépense 💸',`
+    <div class="form-grid">
+      <div class="form-field"><label>Véhicule</label><select id="f_car"><option value="">-- Choisir --</option>${state.cars.map(c=>`<option value="${c.id}">${c.plate} · ${c.brand}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Type</label><select id="f_type">${types.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Montant (MAD) *</label><input type="number" id="f_montant"></div>
+      <div class="form-field"><label>Date</label><input type="date" id="f_date" value="${new Date().toISOString().split('T')[0]}"></div>
+      <div class="form-field full-width"><label>Description</label><input id="f_desc" placeholder="Détail de la dépense..."></div>
+      <div class="form-field"><label><input type="checkbox" id="f_justif"> Justificatif disponible</label></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveDepense()">Ajouter</button>`
+  );
+}
+
+async function saveDepense() {
+  const data={car_id:document.getElementById('f_car').value||null,type:document.getElementById('f_type').value,montant:+document.getElementById('f_montant').value,date:document.getElementById('f_date').value,description:document.getElementById('f_desc').value,justif:document.getElementById('f_justif').checked};
+  if(!data.montant){toast('Montant requis','error');return;}
+  try { await api('POST','/api/depenses',data); closeModal(); await loadAll(); renderPage('depenses'); toast('Dépense ajoutée ✓','success'); } catch(e){toast(e.error||'Erreur','error');}
+}
+
+// ─── GPS LIVE ─────────────────────────────────────────────────────────────────
+let gpsSelected = null;
+function renderGPS(el) {
+  const cars = state.cars||[];
+  const aid = currentAccount?.id||'default';
+  const traccarUrl = localStorage.getItem('carloc_traccar_url_'+aid)||'';
+  const displayV = gpsConnected&&gpsPositions.length>0
+    ? gpsPositions.map(p=>({id:p.id,name:p.name,plate:p.name,speed:Math.round(p.speed*1.852),lat:p.lat,lng:p.lng,fuel:p.fuel,address:p.address,lastUpdate:p.lastUpdate,demo:false}))
+    : cars.map((c,i)=>({id:c.id,name:c.brand+' '+c.model,plate:c.plate,speed:c.status==='loue'?65+i*8:0,lat:33.5-i*0.8,lng:-7.5+i*0.6,fuel:c.fuel,demo:true}));
+
+  const cityPos={Casablanca:[62,100],Rabat:[58,82],Marrakech:[75,138],Fes:[102,62],Tanger:[62,22],Agadir:[44,172]};
+
+  el.innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-title">GPS Live 📍 <span style="font-size:13px;color:${gpsConnected?'#22c55e':'#f59e0b'}">${gpsConnected?'● CONNECTÉ':'● Mode démo'}</span></div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">التتبع المباشر — ${displayV.length} véhicule(s)</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        ${gpsConnected?`<button class="btn btn-success btn-sm" onclick="fetchGPS();renderPage('gps')">↻ Actualiser</button>`:''}
+        <button class="btn btn-ghost" onclick="gpsConfigForm()">⚙ Config. Traccar</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+      <div class="card" style="padding:0;overflow:hidden">
+        <svg viewBox="0 0 200 200" style="width:100%;height:420px;background:linear-gradient(180deg,#060d1a,#0a1628)">
+          ${[...Array(11)].map((_,i)=>`<line x1="${i*20}" y1="0" x2="${i*20}" y2="200" stroke="#0f2040" stroke-width="0.3"/><line x1="0" y1="${i*20}" x2="200" y2="${i*20}" stroke="#0f2040" stroke-width="0.3"/>`).join('')}
+          <path d="M 55,78 L 58,38 L 62,22 L 72,18 L 90,12 L 120,28 L 145,42 L 162,52 L 165,75 L 155,85 L 140,72 L 128,65 L 102,62 L 90,68 L 90,118 L 100,170 L 80,190 L 60,180 L 44,172 L 40,145 L 46,122 L 52,115 L 62,100 L 55,78 Z" fill="#152840" stroke="#1e3860" stroke-width="0.7" opacity="0.9"/>
+          ${Object.entries(cityPos).map(([n,[x,y]])=>`<circle cx="${x}" cy="${y}" r="1.5" fill="#2d4a7a" opacity="0.7"/><text x="${x+2}" y="${y+1}" fill="#3d5a8a" font-size="2.2">${n}</text>`).join('')}
+          ${displayV.map((v,i)=>{
+            const pos=gpsConnected?{x:Math.max(5,Math.min(195,((v.lng+17)/16)*155+10)),y:Math.max(5,Math.min(195,((36-v.lat)/9)*175+10))}:{x:20+i*16,y:18+i*14};
+            const isSel=gpsSelected===i;
+            const col=v.speed>0?'#3b82f6':'#22c55e';
+            return `<g onclick="gpsSelected=${i===gpsSelected?null:i};renderPage('gps')" style="cursor:pointer">
+              ${isSel?`<circle cx="${pos.x}" cy="${pos.y}" r="9" fill="${col}" opacity="0.1"/>`:''}
+              <circle cx="${pos.x}" cy="${pos.y}" r="${isSel?5:3}" fill="${col}" opacity="0.25"/>
+              <circle cx="${pos.x}" cy="${pos.y}" r="${isSel?3:2}" fill="${col}"/>
+              <rect x="${pos.x+2}" y="${pos.y-8}" width="${v.plate.length*1.8+4}" height="9" rx="2" fill="#0d1829" opacity="0.92"/>
+              <text x="${pos.x+4}" y="${pos.y-2.5}" fill="white" font-size="2.6" font-weight="800">${v.plate.slice(0,8)}</text>
+              ${v.speed>0?`<text x="${pos.x+4}" y="${pos.y+2}" fill="${col}" font-size="2" font-weight="700">${v.speed}km/h</text>`:''}
+            </g>`;
+          }).join('')}
+        </svg>
+        <div style="padding:10px 16px;border-top:1px solid #1a2744;display:flex;gap:14px;font-size:11px">
+          <span style="color:#3b82f6">● En mouvement — في الحركة</span>
+          <span style="color:#22c55e">● À l'arrêt — متوقف</span>
+          ${!gpsConnected?'<span style="color:#f59e0b;margin-left:auto">⚠ Mode démo</span>':''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:460px">
+        ${displayV.map((v,i)=>`
+          <div onclick="gpsSelected=${i===gpsSelected?null:i};renderPage('gps')" style="background:#0d1829;border:1px solid ${gpsSelected===i?'#3b82f6':'#1a2744'};border-radius:12px;padding:12px;cursor:pointer">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:13px;font-weight:800;color:#3b82f6">${v.plate}</span>
+              <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:${v.speed>0?'#3b82f620':'#22c55e20'};color:${v.speed>0?'#3b82f6':'#22c55e'}">${v.speed>0?v.speed+' km/h':'Arrêt'}</span>
+            </div>
+            <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">${v.name}</div>
+            ${v.demo?'<div style="font-size:9px;color:#f59e0b">⚠ Données démo — بيانات تجريبية</div>':''}
+            ${v.address?`<div style="font-size:10px;color:#475569">📍 ${v.address}</div>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function gpsConfigForm() {
+  const aid=currentAccount?.id||'default';
+  const url=localStorage.getItem('carloc_traccar_url_'+aid)||'https://traccar.up.railway.app';
+  const user=localStorage.getItem('carloc_traccar_user_'+aid)||'';
+  openModal('Configuration GPS Traccar 📍',`
+    <div style="padding:12px;background:#3b82f610;border-radius:10px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:#3b82f6;margin-bottom:6px">🔗 Comment connecter un véhicule ?</div>
+      <div style="font-size:11px;color:#94a3b8;line-height:1.8">
+        1. Achète boitier TK103/GT06N (~200 MAD) · شراء جهاز GPS<br>
+        2. Insère SIM + configure IP Traccar + port 5023<br>
+        3. Ajoute l'appareil dans Traccar avec l'IMEI<br>
+        4. Configure ici → véhicule visible en temps réel
+      </div>
+    </div>
+    <div class="form-field" style="margin-bottom:14px"><label>URL Traccar</label><input id="tc_url" value="${url}"></div>
+    <div class="form-grid">
+      <div class="form-field"><label>Email (respectez MAJ/min)</label><input id="tc_user" value="${user}" placeholder="Identique à Traccar"></div>
+      <div class="form-field"><label>Mot de passe</label><input type="password" id="tc_pass"></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="connectTraccar()">Connecter — اتصال</button>`
+  );
+}
+
+async function fetchGPS() {
+  const aid=currentAccount?.id||'default';
+  const url=localStorage.getItem('carloc_traccar_url_'+aid);
+  const user=localStorage.getItem('carloc_traccar_user_'+aid);
+  const pass=localStorage.getItem('carloc_traccar_pass_'+aid);
+  if(!url) return;
+  try {
+    const params=new URLSearchParams({traccar_url:url,traccar_user:user||'',traccar_pass:pass||''});
+    const [devices,positions]=await Promise.all([api('GET','/api/traccar/devices?'+params),api('GET','/api/traccar/positions?'+params)]);
+    gpsPositions=devices.map(d=>{
+      const pos=positions.find(p=>p.deviceId===d.id);
+      return {id:d.id,name:d.name,lat:pos?.latitude||0,lng:pos?.longitude||0,speed:pos?.speed||0,address:pos?.address||'',lastUpdate:pos?.fixTime||d.lastUpdate,fuel:pos?.attributes?.fuel||null};
+    });
+    gpsConnected=true;
+  } catch(e){gpsConnected=false;console.error('GPS:',e);}
+}
+
+async function connectTraccar() {
+  const url=document.getElementById('tc_url').value.trim();
+  const user=document.getElementById('tc_user').value.trim();
+  const pass=document.getElementById('tc_pass').value;
+  if(!url){toast('URL obligatoire','error');return;}
+  const aid=currentAccount?.id||'default';
+  toast('Test connexion...','info');
+  try {
+    const params=new URLSearchParams({traccar_url:url,traccar_user:user,traccar_pass:pass});
+    await api('GET','/api/traccar/test?'+params);
+    localStorage.setItem('carloc_traccar_url_'+aid,url);
+    localStorage.setItem('carloc_traccar_user_'+aid,user);
+    localStorage.setItem('carloc_traccar_pass_'+aid,pass);
+    await api('POST','/api/settings/traccar_url',{value:url});
+    await api('POST','/api/settings/traccar_user',{value:user});
+    await api('POST','/api/settings/traccar_pass',{value:pass});
+    closeModal(); await fetchGPS(); renderPage('gps');
+    if(gpsConnected){if(gpsInterval)clearInterval(gpsInterval);gpsInterval=setInterval(()=>{fetchGPS().then(()=>{if(currentPage==='gps')renderPage('gps');});},10000);}
+  } catch(e){toast('Connexion échouée: '+(e.error||e.message||'Vérifiez URL et identifiants'),'error');}
+}
+
+// ─── RAPPORTS ─────────────────────────────────────────────────────────────────
+function renderRapports(el) {
+  const cars=state.cars||[], clients=state.clients||[], contrats=state.contrats||[], factures=state.factures||[], sins=state.sinistres||[], deps=state.depenses||[];
+  const revenue=contrats.filter(c=>c.statut==='termine').reduce((a,c)=>a+Number(c.total||0),0);
+  const fuelCost=deps.filter(d=>d.type==='Carburant').reduce((a,d)=>a+Number(d.montant||0),0);
+  const totalDeps=deps.reduce((a,d)=>a+Number(d.montant||0),0);
+  const topCar=cars.map(c=>({...c,contracts:contrats.filter(x=>x.car_id==c.id).length,revenue:contrats.filter(x=>x.car_id==c.id&&x.statut==='termine').reduce((a,x)=>a+Number(x.total||0),0)})).sort((a,b)=>b.revenue-a.revenue)[0];
+
+  el.innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-title">Rapports & Analytics 📈</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">التقارير والإحصاءات</div>
+      </div>
+    </div>
+    <div class="stats-grid" style="margin-bottom:20px">
+      ${[
+        {i:'💰',l:'CA total — رقم الأعمال',v:fmtMAD(revenue),c:'#3b82f6'},
+        {i:'💸',l:'Total dépenses',v:fmtMAD(totalDeps),c:'#ef4444'},
+        {i:'📈',l:'Marge brute',v:fmtMAD(revenue-totalDeps),c:'#22c55e'},
+        {i:'⛽',l:'Coût carburant',v:fmtMAD(fuelCost),c:'#f97316'},
+        {i:'🚗',l:'Taux occupation',v:Math.round(cars.filter(c=>c.status==='loue').length/Math.max(cars.length,1)*100)+'%',c:'#a855f7'},
+        {i:'📋',l:'Contrats en cours',v:contrats.filter(c=>c.statut==='en_cours').length,c:'#f97316'},
+        {i:'🚨',l:'Sinistres ouverts',v:sins.filter(s=>s.statut==='ouvert').length,c:'#ef4444'},
+        {i:'👤',l:'Total clients',v:clients.length,c:'#22c55e'},
+      ].map(s=>`<div class="stat-card"><div class="stat-icon" style="background:${s.c}18">${s.i}</div><div class="stat-value" style="color:${s.c}">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+      <div class="card">
+        <div style="font-size:14px;font-weight:700;margin-bottom:14px">CA par véhicule — رقم الأعمال لكل سيارة</div>
+        ${cars.map(c=>{
+          const rev=contrats.filter(x=>x.car_id==c.id&&x.statut==='termine').reduce((a,x)=>a+Number(x.total||0),0);
+          const maxRev=Math.max(...cars.map(cc=>contrats.filter(x=>x.car_id==cc.id&&x.statut==='termine').reduce((a,x)=>a+Number(x.total||0),0)),1);
+          return `<div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+            <div style="width:90px;font-size:11px;font-weight:700;flex-shrink:0">${c.plate}</div>
+            <div style="flex:1;height:7px;background:#1a2744;border-radius:4px">
+              <div style="height:100%;border-radius:4px;background:linear-gradient(to right,#3b82f6,#60a5fa);width:${(rev/maxRev*100).toFixed(0)}%"></div>
+            </div>
+            <div style="width:110px;text-align:right;font-size:12px;font-weight:700;color:#3b82f6;flex-shrink:0">${fmtMAD(rev)}</div>
+          </div>`;
+        }).join('')||'<p style="color:#94a3b8">Aucune donnée</p>'}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        ${topCar?`<div class="card">
+          <div style="font-size:13px;font-weight:700;margin-bottom:10px">🏆 Meilleur véhicule</div>
+          <div style="font-size:16px;font-weight:800;color:#3b82f6">${topCar.plate}</div>
+          <div style="font-size:12px;color:#94a3b8">${topCar.brand} ${topCar.model}</div>
+          <div style="font-size:20px;font-weight:800;color:#22c55e;margin-top:8px">${fmtMAD(topCar.revenue)}</div>
+          <div style="font-size:11px;color:#94a3b8">${topCar.contracts} contrat(s)</div>
+        </div>`:''}
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;margin-bottom:10px">Dépenses par type — المصاريف</div>
+          ${['Carburant','Entretien','Assurance','Vignette','Autre'].map(t=>{
+            const amt=deps.filter(d=>d.type===t||(!['Carburant','Entretien','Assurance','Vignette'].includes(d.type)&&t==='Autre')).reduce((a,d)=>a+Number(d.montant||0),0);
+            return amt>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #0f1e35;font-size:12px">
+              <span style="color:#94a3b8">${t}</span><span style="font-weight:700;color:#ef4444">${fmtMAD(amt)}</span>
+            </div>`:'';
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── ALERTS ───────────────────────────────────────────────────────────────────
+function renderAlerts(el) {
+  const alerts=state.alerts||[];
+  const unread=alerts.filter(a=>!a.read).length;
+  el.innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-title">Alertes 🔔</div>
+        <div style="font-size:12px;color:#94a3b8;direction:rtl">التنبيهات — ${unread} non lue(s)</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="markAllRead()">Tout lire — قراءة الكل</button>
+        <button class="btn btn-blue" onclick="alertForm()">+ Nouvelle alerte</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${alerts.map(a=>{
+        const c=STATUS_COLORS[a.type]||'#64748b';
+        return `<div style="background:#0d1829;border:1px solid #1a2744;border-left:4px solid ${c};border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;opacity:${a.read?0.6:1}">
+          <div style="width:40px;height:40px;border-radius:10px;background:${c}20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${a.type==='urgent'?'🔴':a.type==='warning'?'🟡':'🔵'}</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;margin-bottom:2px">${a.title}</div>
+            <div style="font-size:12px;color:#94a3b8">${a.desc||''}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            ${!a.read?`<button class="btn btn-ghost btn-sm" onclick="markRead(${a.id})">Lu</button>`:''}
+            <button class="btn btn-danger btn-sm" onclick="delItem('alerts',${a.id},'cette alerte')">Suppr.</button>
+          </div>
+        </div>`;
+      }).join('')||'<div class="card" style="text-align:center;color:#94a3b8;padding:40px">Aucune alerte — لا توجد تنبيهات</div>'}
+    </div>`;
+}
+
+async function markRead(id) { try { await api('PUT','/api/alerts/'+id,{}); await loadAll(); renderPage('alerts'); } catch(e){} }
+async function markAllRead() { try { await api('PUT','/api/alerts',{}); await loadAll(); renderPage('alerts'); toast('Toutes lues ✓','success'); } catch(e){} }
+function alertForm() {
+  openModal('Nouvelle alerte 🔔',`
+    <div class="form-field" style="margin-bottom:14px"><label>Type</label><select id="f_atype"><option value="urgent">Urgent — عاجل</option><option value="warning">Attention — تحذير</option><option value="info" selected>Info — معلومة</option></select></div>
+    <div class="form-field" style="margin-bottom:14px"><label>Titre *</label><input id="f_title" placeholder="Titre de l'alerte"></div>
+    <div class="form-field"><label>Description</label><textarea id="f_desc" rows="3"></textarea></div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveAlert()">Créer</button>`
+  );
+}
+async function saveAlert() {
+  const data={type:document.getElementById('f_atype').value,title:document.getElementById('f_title').value,desc:document.getElementById('f_desc').value};
+  if(!data.title){toast('Titre requis','error');return;}
+  try { await api('POST','/api/alerts',data); closeModal(); await loadAll(); renderPage('alerts'); toast('Alerte créée ✓','success'); } catch(e){}
+}
+
+// ─── SUPER ADMIN ──────────────────────────────────────────────────────────────
+async function renderSuperAdmin(el) {
+  if(currentAccount.role!=='super'){el.innerHTML='<div class="card" style="text-align:center;color:#ef4444;padding:40px">Accès refusé</div>';return;}
+  let accounts=[],stats={},trials=[];
+  try { [accounts,stats,trials]=await Promise.all([api('GET','/api/admin/accounts'),api('GET','/api/admin/stats'),api('GET','/api/admin/trial-requests')]); } catch(e){}
+  const pending=trials.filter(r=>r.status==='en_attente');
+
+  el.innerHTML=`
+    <div class="page-header">
+      <div><div class="page-title">👑 Super Admin</div><div style="font-size:12px;color:#94a3b8;direction:rtl">إدارة الحسابات — Gestion comptes clients</div></div>
+      <button class="btn btn-blue" onclick="createAccountForm()">+ Créer un compte</button>
+    </div>
+    <div class="stats-grid" style="margin-bottom:20px">
+      ${[
+        ['👥','Total clients',stats.total||0,'#3b82f6'],
+        ['✅','Actifs',stats.active||0,'#22c55e'],
+        ['⚠️','Expirés',stats.expired||0,'#ef4444'],
+        ['💰','CA estimé',fmtMAD(stats.totalRevenue||0),'#f97316'],
+      ].map(([i,l,v,c])=>`<div class="stat-card"><div class="stat-icon" style="background:${c}18">${i}</div><div class="stat-value" style="color:${c}">${v}</div><div class="stat-label">${l}</div></div>`).join('')}
+    </div>
+
+    ${pending.length>0?`
+    <div class="card" style="border:1px solid #3b82f640;margin-bottom:20px">
+      <div style="font-size:15px;font-weight:800;color:#3b82f6;margin-bottom:14px">📋 Demandes d'essai en attente (${pending.length})</div>
+      ${pending.map(r=>`
+        <div style="padding:14px;background:#ffffff06;border-radius:12px;margin-bottom:10px;border-left:4px solid #3b82f6">
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px">
+            <div><div style="font-size:10px;color:#94a3b8">Nom complet</div><div style="font-size:13px;font-weight:800">${r.prenom} ${r.nom}</div></div>
+            <div><div style="font-size:10px;color:#94a3b8">Société de location</div><div style="font-size:13px;font-weight:700;color:#3b82f6">${r.societe}</div></div>
+            <div><div style="font-size:10px;color:#94a3b8">Téléphone</div><div style="font-size:13px;font-weight:700">${r.phone}</div></div>
+            <div><div style="font-size:10px;color:#94a3b8">Email</div><div style="font-size:13px;font-weight:700">${r.email}</div></div>
+          </div>
+          <div style="font-size:11px;color:#475569;margin-bottom:10px">Reçu le ${r.created_at?.slice(0,16)||''}</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-success btn-sm" onclick="approveTrialForm(${r.id},'${r.prenom} ${r.nom}','${r.email}')">✓ Approuver & Créer compte</button>
+            <button class="btn btn-danger btn-sm" onclick="rejectTrial(${r.id})">✕ Refuser</button>
+          </div>
+        </div>`).join('')}
+    </div>`:''}
+
+    <div class="card">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Comptes clients (${accounts.filter(a=>a.role!=='super').length})</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Nom</th><th>Email</th><th>Société</th><th>Plan</th><th>Expiration</th><th>Statut</th><th>Dernière cnx</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${accounts.filter(a=>a.role!=='super').map(a=>{
+            const days=a.plan==='life'?'∞':Math.max(0,Math.ceil((new Date(a.expires_at)-new Date())/86400000))+'j';
+            const exp=a.plan!=='life'&&a.expires_at&&new Date(a.expires_at)<new Date();
+            return `<tr>
+              <td style="font-weight:700">${a.name}</td>
+              <td style="font-size:12px;color:#94a3b8">${a.email}</td>
+              <td style="font-size:12px;color:#94a3b8">${a.company||'—'}</td>
+              <td><span style="padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;background:${a.plan==='life'?'#22c55e20':a.plan==='year'?'#3b82f620':'#f9731620'};color:${a.plan==='life'?'#22c55e':a.plan==='year'?'#3b82f6':'#f97316'}">${a.plan}</span></td>
+              <td style="color:${exp?'#ef4444':'#94a3b8'};font-size:12px">${a.expires_at?.slice(0,10)||'—'} (${days})</td>
+              <td>${badge(a.status==='active'?'actif':'suspendu')}</td>
+              <td style="font-size:11px;color:#475569">${a.last_login?a.last_login.slice(0,16):'Jamais'}</td>
+              <td>
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  <button class="btn btn-ghost btn-sm" onclick="editAccountForm(${a.id})">Modifier</button>
+                  <button class="btn btn-success btn-sm" onclick="extendAccount(${a.id})">+30j</button>
+                  <button class="btn btn-warning btn-sm" onclick="toggleAccount(${a.id},'${a.status}')">${a.status==='active'?'Suspendre':'Activer'}</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteAccount(${a.id})">Suppr.</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')||'<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:30px">Aucun client</td></tr>'}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+function createAccountForm() {
+  openModal('Créer un compte client',`
+    <div class="form-grid">
+      <div class="form-field"><label>Nom complet *</label><input id="a_name" placeholder="Mohammed Alami"></div>
+      <div class="form-field"><label>Email *</label><input type="email" id="a_email" placeholder="client@email.ma"></div>
+      <div class="form-field"><label>Mot de passe *</label><input type="password" id="a_pass" placeholder="Minimum 6 caractères"></div>
+      <div class="form-field"><label>Société de location</label><input id="a_company" placeholder="Auto Location SARL"></div>
+      <div class="form-field"><label>Téléphone</label><input id="a_phone" placeholder="0661234567"></div>
+      <div class="form-field"><label>Plan</label>
+        <select id="a_plan">
+          <option value="trial">Essai 48h — Gratuit</option>
+          <option value="month">30 Jours — 499 MAD</option>
+          <option value="year">1 An — 4 990 MAD</option>
+          <option value="life">À Vie — 19 999 MAD</option>
+        </select>
+      </div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="saveNewAccount()">Créer le compte</button>`
+  );
+}
+
+async function saveNewAccount() {
+  const data={name:document.getElementById('a_name').value,email:document.getElementById('a_email').value,password:document.getElementById('a_pass').value,company:document.getElementById('a_company').value,phone:document.getElementById('a_phone').value,plan:document.getElementById('a_plan').value};
+  if(!data.name||!data.email||!data.password){toast('Nom, email et mot de passe requis','error');return;}
+  try { await api('POST','/api/admin/accounts',data); closeModal(); renderPage('superadmin'); toast('Compte créé ✓','success'); } catch(e){toast(e.error||'Erreur','error');}
+}
+
+async function editAccountForm(id) {
+  const accounts=await api('GET','/api/admin/accounts');
+  const a=accounts.find(x=>x.id==id);
+  if(!a) return;
+  openModal('Modifier le compte',`
+    <div class="form-grid">
+      <div class="form-field"><label>Nom</label><input id="a_name" value="${a.name}"></div>
+      <div class="form-field"><label>Email</label><input type="email" id="a_email" value="${a.email}"></div>
+      <div class="form-field"><label>Nouveau MDP (vide = inchangé)</label><input type="password" id="a_pass" placeholder="Nouveau mot de passe"></div>
+      <div class="form-field"><label>Société</label><input id="a_company" value="${a.company||''}"></div>
+      <div class="form-field"><label>Plan</label><select id="a_plan"><option value="trial" ${a.plan==='trial'?'selected':''}>Essai 48h</option><option value="month" ${a.plan==='month'?'selected':''}>30 Jours</option><option value="year" ${a.plan==='year'?'selected':''}>1 An</option><option value="life" ${a.plan==='life'?'selected':''}>À Vie</option></select></div>
+      <div class="form-field"><label>Statut</label><select id="a_status"><option value="active" ${a.status==='active'?'selected':''}>Actif</option><option value="suspended" ${a.status==='suspended'?'selected':''}>Suspendu</option></select></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-blue" onclick="updateAccount(${id})">Enregistrer</button>`
+  );
+}
+
+async function updateAccount(id) {
+  const data={name:document.getElementById('a_name').value,email:document.getElementById('a_email').value,company:document.getElementById('a_company').value,plan:document.getElementById('a_plan').value,status:document.getElementById('a_status').value};
+  const pass=document.getElementById('a_pass').value;
+  if(pass) data.newPassword=pass;
+  try { await api('PUT','/api/admin/accounts/'+id,data); closeModal(); renderPage('superadmin'); toast('Compte mis à jour ✓','success'); } catch(e){toast(e.error||'Erreur','error');}
+}
+
+async function extendAccount(id) {
+  try { await api('POST','/api/admin/accounts/'+id+'/extend',{days:30}); renderPage('superadmin'); toast('+30 jours ajoutés ✓','success'); } catch(e){}
+}
+
+async function toggleAccount(id, status) {
+  const ns=status==='active'?'suspended':'active';
+  try { await api('PUT','/api/admin/accounts/'+id,{status:ns}); renderPage('superadmin'); toast(ns==='active'?'Compte activé ✓':'Compte suspendu','success'); } catch(e){}
+}
+
+async function deleteAccount(id) {
+  confirm2('Supprimer le compte','Toutes les données de ce client seront supprimées. Confirmer ?', async()=>{
+    try { await api('DELETE','/api/admin/accounts/'+id); renderPage('superadmin'); toast('Compte supprimé ✓','success'); } catch(e){}
+  });
+}
+
+function approveTrialForm(id,name,email) {
+  openModal('Approuver la demande de '+name,`
+    <div style="padding:12px;background:#22c55e15;border-radius:10px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;color:#22c55e">✓ Création compte pour: ${name}</div>
+      <div style="font-size:12px;color:#94a3b8">Email: ${email}</div>
+    </div>
+    <div class="form-grid">
+      <div class="form-field"><label>Plan *</label><select id="ap_plan"><option value="trial">Essai 48h — Gratuit</option><option value="month">30 Jours — 499 MAD</option><option value="year">1 An — 4 990 MAD</option><option value="life">À Vie — 19 999 MAD</option></select></div>
+      <div class="form-field"><label>Mot de passe *</label><input id="ap_pass" value="CarLoc2026!"></div>
+    </div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-success" onclick="approveTrial(${id})">✓ Créer le compte</button>`
+  );
+}
+
+async function approveTrial(id) {
+  const plan=document.getElementById('ap_plan').value, password=document.getElementById('ap_pass').value;
+  if(!password){toast('Mot de passe obligatoire','error');return;}
+  try {
+    const r=await api('POST','/api/admin/trial-requests/'+id+'/approve',{plan,password});
+    closeModal(); renderPage('superadmin');
+    toast('Compte créé ✓ — Email: '+r.email+' / MDP: '+r.password,'success');
+  } catch(e){toast(e.error||'Erreur','error');}
+}
+
+async function rejectTrial(id) {
+  confirm2('Refuser la demande','Confirmez-vous le refus ?', async()=>{
+    try { await api('POST','/api/admin/trial-requests/'+id+'/reject',{}); renderPage('superadmin'); toast('Demande refusée','success'); } catch(e){}
+  });
+}
+
+// ─── TRIAL FORM ───────────────────────────────────────────────────────────────
+function showTrialForm() {
+  ['tr_prenom','tr_nom','tr_phone','tr_email','tr_societe'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('trialError').style.display='none';
+  document.getElementById('trialSuccess').style.display='none';
+  document.getElementById('trialFooter').style.display='flex';
+  document.getElementById('trialModal').classList.add('open');
+}
+
+async function submitTrialRequest() {
+  const nom=document.getElementById('tr_nom').value.trim(), prenom=document.getElementById('tr_prenom').value.trim();
+  const phone=document.getElementById('tr_phone').value.trim(), email=document.getElementById('tr_email').value.trim();
+  const societe=document.getElementById('tr_societe').value.trim();
+  const errEl=document.getElementById('trialError');
+  errEl.style.display='none';
+  if(!nom||!prenom||!phone||!email||!societe){errEl.textContent='Tous les champs sont obligatoires';errEl.style.display='block';return;}
+  if(phone.length<9){errEl.textContent='Numéro de téléphone invalide';errEl.style.display='block';return;}
+  const btn=document.getElementById('trialSubmitBtn');
+  btn.textContent='Envoi...'; btn.disabled=true;
+  try {
+    const r=await fetch('/api/trial-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nom,prenom,phone,email,societe})});
+    const data=await r.json();
+    if(!r.ok) throw data;
+    document.getElementById('trialSuccess').style.display='block';
+    document.getElementById('trialFooter').style.display='none';
+  } catch(e){
+    errEl.textContent=e.error||'Erreur lors de l envoi. Réessayez.';
+    errEl.style.display='block';
+    btn.textContent='Envoyer — إرسال'; btn.disabled=false;
+  }
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+async function delItem(resource, id, label) {
+  confirm2('Supprimer — حذف', 'Voulez-vous supprimer '+label+' ? Cette action est irréversible.', async()=>{
+    try { await api('DELETE','/api/'+resource+'/'+id); await loadAll(); renderPage(currentPage); toast('Supprimé ✓','success'); }
+    catch(e){toast(e.error||'Erreur','error');}
+  });
+}
+
+// ─── AUTO LOGIN ───────────────────────────────────────────────────────────────
+window.onload = async () => {
+  if(token) {
+    try {
+      currentAccount = await api('GET','/api/me');
+      await initApp();
+    } catch(e) {
+      localStorage.removeItem('carloc_token');
+      token=null;
+    }
+  }
+};
+document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>
